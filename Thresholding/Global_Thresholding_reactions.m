@@ -158,4 +158,3 @@ for i = 1:numSamples
     housekep_core_react(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
     housekep_core_react(i).percentage = (housekep_core_react(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
-
