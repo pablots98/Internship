@@ -60,10 +60,10 @@ function [adjusted_matrix, expression_scoreMatrix] = localT2_new(mappedDat, lowe
     end
 
     % Convert the adjusted values to 1 if they are >= 1, otherwise to 0
-    adjusted_matrix = expression_scoreLocal_T2_25_75 >= 1;
+    adjusted_matrix = expression_scoreLocal_T2_25_75 %>= 1;
 
     % New matrix with values between 0 and 1
-    expression_scoreMatrix = expression_scoreLocal_T2_25_75;
-    expression_scoreMatrix(expression_scoreMatrix >= 1) = 1;
+    expression_scoreMatrix = expression_scoreLocal_T2_25_75 >= 1;
+    %expression_scoreMatrix(expression_scoreMatrix >= 1) = 1;
 
 end
