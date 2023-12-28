@@ -62,21 +62,30 @@ low_percentage = 25;
 [expression_scoreMatrix, coreMat] = localT2_new(logdata, low_percentage, up_percentage);
 
 %% Map to Expression
-% Create a structure
-expressionData.gene = array2table(gene_names)
-expressionData.value = array2table(expression_scoreMatrix)
-% expressionData = table(gene_names, expression_scoreMatrix);
-% expressionData.Properties.VariableNames = {'gene', 'value'};
 
+% Adjusting the structure to what is likely expected by the function
+expressionData.gene = gene_names; % Assuming gene_names is a cell array of gene identifiers
+expressionData.value = expression_scoreMatrix; % Assuming this is a numeric matrix of expression values
 
 Rxns_local25_75 = [];
 geneUsed_local25_75 = {};
 
-% Assuming 'expressionData' is set up correctly and 'expression_scoreMatrix' is your gene expression matrix
-for i = 1:length(sampleNames) % Iterate over each sample
-    %expressionData.value = expression_scoreMatrix(:, i); % Set the expression data for the current sample
-    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionData, 'false');
+% Iterate over each sample
+for i = 1:length(sampleNames) % Assuming sampleNames is a list of your samples
+    % Extract the expression data for the current sample
+    expressionDataSample = struct();
+    expressionDataSample.gene = expressionData.gene;
+    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+
+    % Map expression data to reactions for the current sample
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
 end
 
+%% Check core reactions
+
+for i = 1:length(sampleNames)
+    ActiveRxns_local25_75{i} = (find(Rxns_local25_75(:, i)>=1));
+end
+disp(ActiveRxns_local25_75)
