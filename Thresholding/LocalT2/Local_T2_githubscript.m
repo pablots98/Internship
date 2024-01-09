@@ -73,6 +73,25 @@ for i = 1:size(Coregene_Matrix, 2)
     coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene actie names
 end
 %% Map to Expression
+% AND rules model
+% Obtén las reglas GPR originales del modelo
+originalGPRs = model.grRules;
+
+% Procesa las reglas para eliminar las partes "OR"
+processedGPRs = cell(size(originalGPRs));
+for i = 1:length(originalGPRs)
+    originalRule = originalGPRs{i};
+    
+    % Elimina cualquier parte "OR" usando expresiones regulares
+    processedRule = regexprep(originalRule, '\s*and\s*', ''); % Elimina "or" y espacios cambiar and por or
+    
+    processedGPRs{i} = processedRule;
+end
+
+% Crea un nuevo modelo con las reglas GPR procesadas
+newModel = model;
+newModel.grRules = processedGPRs;
+
 
 % Adjusting the structure to what is likely expected by the function
 expressionData.gene = gene_names; % Assuming gene_names is a cell array of gene identifiers
@@ -89,7 +108,7 @@ for i = 1:length(sampleNames) % Assuming sampleNames is a list of your samples
     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
 
     % Map expression data to reactions for the current sample
-    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(newModel, expressionDataSample, 'false');
     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
 end

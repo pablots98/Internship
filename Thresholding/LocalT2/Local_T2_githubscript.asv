@@ -73,6 +73,7 @@ for i = 1:size(Coregene_Matrix, 2)
     coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene actie names
 end
 %% Map to Expression
+% AND rul
 
 % Adjusting the structure to what is likely expected by the function
 expressionData.gene = gene_names; % Assuming gene_names is a cell array of gene identifiers
@@ -102,60 +103,45 @@ end
 disp(ActiveRxns_local25_75)
 
 %% Obtain the core genes from core reactions
-% Preparando la variable para guardar los resultados
 geneData = cell(size(ActiveRxns_local25_75));
 
-% Bucle para convertir las reacciones en genes
+% Turn reactions to genes
 for i = 1:length(ActiveRxns_local25_75)
-    % Obtener los nombres de las reacciones activas para la muestra actual
     activeReactionsIndices = ActiveRxns_local25_75{i};
     activeReactionsNames = model.rxns(activeReactionsIndices);
 
-    % Utilizando la función findGenesFromRxns
-    % Asumiendo que 'model' es tu modelo COBRA
     geneList = findGenesFromRxns(model, activeReactionsNames);
 
-    % Guardando los resultados en geneData
     geneData{i} = geneList;
 end
 %% 
-% Asumiendo que geneData es un array de celdas con 48 columnas
 numColumns = size(geneData, 2);
 
-% Preparando el array para almacenar los nombres de los genes únicos
 uniqueGenesArray = cell(1, numColumns);
 
 for i = 1:numColumns
-    % Extraer todos los nombres de genes de la columna actual
     genesInColumn = geneData{i};
 
-    % Si los genes están en celdas anidadas, aplanarlos
+    % If the genes are in nested cells, flatten them out
     if iscell(genesInColumn{1})
         genesInColumn = vertcat(genesInColumn{:});
     end
 
-    % Eliminar nombres de genes duplicados
+    % Remove duplicate gene names
     uniqueGenes = unique(genesInColumn);
 
-    % Almacenar los nombres de genes únicos en el array
     uniqueGenesArray{i} = uniqueGenes;
 end
 
 %% Compare both
-% Asumiendo que uniqueGenesArray y coreGenesStructure tienen el mismo número de columnas
 numColumns = length(uniqueGenesArray);
 geneMatchCounts = zeros(1, numColumns);
 
 for i = 1:numColumns
-    % Obtener los genes únicos de uniqueGenesArray para la columna actual
     uniqueGenes = uniqueGenesArray{i};
     
-    % Obtener los genes activos de coreGenesStructure para la columna actual
-    % Asumiendo que cada elemento de coreGenesStructure es un array de nombres de genes
     activeGenes = coreGenesStructure{i};
 
-    % Encontrar coincidencias y contarlas
     geneMatches = ismember(uniqueGenes, activeGenes);
     geneMatchCounts(i) = sum(geneMatches);
 end
-
