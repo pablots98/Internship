@@ -128,7 +128,7 @@ for i = 1:length(ActiveRxns_local25_75)
     activeReactionsIndices = ActiveRxns_local25_75{i};
     activeReactionsNames = model.rxns(activeReactionsIndices);
 
-    geneList = findGenesFromRxns(model, activeReactionsNames);
+    geneList = findGenesFromRxns(newModel, activeReactionsNames);
 
     geneData{i} = geneList;
 end
