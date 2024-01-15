@@ -11,7 +11,7 @@ The folder includes different files.
 - **Global_Threshold_reactions**: This code sets the core genes based on the above, and studies the percentage of core genes that are considered housekeeping genes. In turn, through these core-genes, the core-reactions needed to run the mCADRE algorithm are established.
 ## 
 The Global thresholding code was written following the considerations of Richelle et al., 2019. 
-- Richelle, A., Joshi, C., & Lewis, N. E. (2019). Assessing key decisions for transcriptomic data integration in biochemical networks. PLoS computational biology, 15(7), e1007185.
+1. Richelle, A., Joshi, C., & Lewis, N. E. (2019). Assessing key decisions for transcriptomic data integration in biochemical networks. PLoS computational biology, 15(7), e1007185.
 ##
 ## Authors
 
