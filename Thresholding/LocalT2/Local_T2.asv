@@ -151,15 +151,20 @@ for i = 1:numColumns
     uniqueGenesArray{i} = uniqueGenes;
 end
 
-%% Compare both
+%% Compare both and get the names of matching genes
 numColumns = length(uniqueGenesArray);
-geneMatchCounts = zeros(1, numColumns);
+matchedGenesNames = cell(1, numColumns); 
 
 for i = 1:numColumns
-    uniqueGenes = uniqueGenesArray{i};
-    
+    uniqueGenes = uniqueGenesArray{i};    
     activeGenes = coreGenesStructure{i};
 
     geneMatches = ismember(uniqueGenes, activeGenes);
-    geneMatchCounts(i) = sum(geneMatches);
+    matchedGenes = uniqueGenes(geneMatches); 
+    matchedGenesNames{i} = matchedGenes;  
 end
+%% 
+%%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with 
+% core genes and reactions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

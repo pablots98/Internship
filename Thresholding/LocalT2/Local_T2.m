@@ -113,6 +113,14 @@ for i = 1:length(sampleNames) % Assuming sampleNames is a list of your samples
     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
 end
 
+% Define reactionNamesPerSample
+reactionNamesPerSample = cell(size(sampleNames));
+
+% Obtén los nombres de las reacciones activas para cada muestra
+for i = 1:length(sampleNames)
+    activeReactions = find(Rxns_local25_75(:, i) >= 1);  % Encuentra reacciones activas
+    reactionNamesPerSample{i} = model.rxns(activeReactions);  % Guarda los nombres de las reacciones activas
+end
 %% Check core reactions
 
 for i = 1:length(sampleNames)
@@ -162,5 +170,42 @@ for i = 1:numColumns
     geneMatches = ismember(uniqueGenes, activeGenes);
     matchedGenes = uniqueGenes(geneMatches); 
     matchedGenesNames{i} = matchedGenes;  
+end
+%% 
+%%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with 
+% core genes and reactions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Housekeeping genes analysis
+genes_table = data_met.Ensembl_GeneID;
+index_names = ismember(genes_table, h_k_g.converted_alias);
+hkg_met = data_met(index_names, :);
+hkg_met_ens = hkg_met(:, "Ensembl_GeneID");
+geneIDs = table2cell(hkg_met_ens);
+[results] = findRxnsFromGenes(model, geneIDs);
+
+% Extract unique housekeeping reaction names
+fields = fieldnames(results);
+housekeep_react = {};
+for i = 1:length(fields)
+    field = fields{i};
+    cellArray = results.(field);
+    for j = 1:size(cellArray, 1)
+        firstcol = cellArray{j, 1};
+        housekeep_react{end+1, 1} = firstcol;
+    end
+end
+housekeep_react_unique = unique(housekeep_react);
+disp(housekeep_react_unique);
+
+%% Compare the number of housekeeping core reactions
+numSample = numel(reactionNamesPerSample);
+housekep_core_react = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
+totalHousekeepingReactions = numel(housekeep_react_unique);
+
+for i = 1:numSample
+    coreReactions = reactionNamesPerSample{i};
+    housekeepingInCore = ismember(housekeep_react_unique, coreReactions);
+    housekep_core_react(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
+    housekep_core_react(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
+    housekep_core_react(i).percentage = (housekep_core_react(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
 
