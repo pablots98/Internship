@@ -11,8 +11,8 @@ data = readtable('Mod_data.xlsx');
 % Housekeeping genes with the ensembl ids
 h_k_g = readtable('NM2ENSG.xlsx');
 % Human1 metabolic model.
-%model = readCbModel('Human-GEM_Cobra_v1.01.mat')
-model = load('SysBio_COBRA_v1.13.mat');
+model = readCbModel('Human-GEM_Cobra_v1.01.mat')
+%model = load('SysBio_COBRA_v1.13.mat');
 model = model.model
 
 %% Metabolic genes
