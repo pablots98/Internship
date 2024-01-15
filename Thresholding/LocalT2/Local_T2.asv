@@ -151,16 +151,15 @@ for i = 1:numColumns
     uniqueGenesArray{i} = uniqueGenes;
 end
 
-%% Compare both and get the names of matching genes
+%% Compare both
 numColumns = length(uniqueGenesArray);
-matchedGenesNames = cell(1, numColumns); 
+geneMatchCounts = zeros(1, numColumns);
 
 for i = 1:numColumns
-    uniqueGenes = uniqueGenesArray{i};    
+    uniqueGenes = uniqueGenesArray{i};
+    
     activeGenes = coreGenesStructure{i};
 
     geneMatches = ismember(uniqueGenes, activeGenes);
-    matchedGenes = uniqueGenes(geneMatches); 
-    matchedGenesNames{i} = matchedGenes;  
+    geneMatchCounts(i) = sum(geneMatches);
 end
-
