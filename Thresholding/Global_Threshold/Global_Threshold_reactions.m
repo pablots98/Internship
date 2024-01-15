@@ -151,6 +151,19 @@ for i = 1:length(fields)
 end
 housekeep_react_unique = unique(housekeep_react);
 disp(housekeep_react_unique);
+%% Compare the number of housekeeping core genes
+numSample_genes = numel(results_CoreGenes.CoreGeneIDs);
+housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
+totalHousekeepingGenes = numel(hkg_met.Ensembl_GeneID);
+
+for i = 1:numSample_genes
+    coreGenes = results_CoreGenes.CoreGeneIDs{i};
+    housekeepingGeneNames = hkg_met.Ensembl_GeneID;
+    housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
+    housekep_core_gene(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
+    housekep_core_gene(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
+    housekep_core_gene(i).percentage = (housekep_core_gene(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
+end
 
 %% Compare the number of housekeeping core reactions
 numSample = numel(reactionNamesPerSample);

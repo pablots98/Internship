@@ -201,7 +201,7 @@ numSample_genes = numel(coreGenesStructure);
 housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
 totalHousekeepingGenes = numel(hkg_met.Ensembl_GeneID);
 
-for i = 1:numSample
+for i = 1:numSample_genes
     coreGenes = coreGenesStructure{i};
     housekeepingGeneNames = hkg_met.Ensembl_GeneID;
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
