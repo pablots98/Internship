@@ -9,10 +9,11 @@ changeCobraSolver('gurobi', 'all');
 
 %% Load data
 % Load transcriptomics data, housekeeping genes, and metabolic model
-data = readtable('Merged_data.xlsx'); % Transcriptomics data
+data = readtable('Mod_data.xlsx'); % Transcriptomics data
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
+model_genes = model.genes;
 
 %ensure the model does not contain blocked reactions
 [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
@@ -72,27 +73,26 @@ for i = 1:size(Coregene_Matrix, 2)
     activeGeneIndices = find(Coregene_Matrix(:, i)); % Gene active indexes
     coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene actie names
 end
-%% Map to Expression
-% AND rules model
-% Obtén las reglas GPR originales del modelo
+%% AND rules
+% Get the original GPR rules of the model
 originalGPRs = model.grRules;
 
-% Procesa las reglas para eliminar las partes "OR"
+% Process the rules to remove the "AND" parts.
 processedGPRs = cell(size(originalGPRs));
 for i = 1:length(originalGPRs)
     originalRule = originalGPRs{i};
     
-    % Elimina cualquier parte "OR" usando expresiones regulares
-    processedRule = regexprep(originalRule, '\s*and\s*', ''); % Elimina "or" y espacios cambiar and por or
+    % Remove any "OR" parts using regular expressions
+    processedRule = regexprep(originalRule, '\s*or\s*', ''); % Remove "or" and spaces change and to "or".
     
     processedGPRs{i} = processedRule;
 end
 
-% Crea un nuevo modelo con las reglas GPR procesadas
+% Creates a new model with the processed GPR rules
 newModel = model;
 newModel.grRules = processedGPRs;
 
-
+%% Map to Expression
 % Adjusting the structure to what is likely expected by the function
 expressionData.gene = gene_names; % Assuming gene_names is a cell array of gene identifiers
 expressionData.value = expression_scoreMatrix; % Assuming this is a numeric matrix of expression values
@@ -175,12 +175,15 @@ end
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with 
 % core genes and reactions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Housekeeping genes analysis
-genes_table = data_met.Ensembl_GeneID;
-index_names = ismember(genes_table, h_k_g.converted_alias);
-hkg_met = data_met(index_names, :);
-hkg_met_ens = hkg_met(:, "Ensembl_GeneID");
-geneIDs = table2cell(hkg_met_ens);
-[results] = findRxnsFromGenes(model, geneIDs);
+ens_hkg = h_k_g.converted_alias;
+% Check which ones are metabolic
+% Find indexes of the genes that are present in the metabolic model. 
+index_names = ismember(ens_hkg, model_genes);
+% take the rows of the dataset that match the indexes obtained before, with all the data 
+met_hkg = ens_hkg(index_names);
+
+results = findRxnsFromGenes(model, met_hkg);
+
 
 % Extract unique housekeeping reaction names
 fields = fieldnames(results);
@@ -199,11 +202,11 @@ disp(housekeep_react_unique);
 %% Compare the number of housekeeping core genes
 numSample_genes = numel(coreGenesStructure);
 housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
-totalHousekeepingGenes = numel(hkg_met.Ensembl_GeneID);
+totalHousekeepingGenes = numel(met_hkg);
 
 for i = 1:numSample_genes
     coreGenes = coreGenesStructure{i};
-    housekeepingGeneNames = hkg_met.Ensembl_GeneID;
+    housekeepingGeneNames = met_hkg;
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
     housekep_core_gene(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
     housekep_core_gene(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
