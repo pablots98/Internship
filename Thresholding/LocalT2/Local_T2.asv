@@ -1,43 +1,43 @@
 %%%%%%%%%%%%%%%%% Local T2 thresholding reactions %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Gurobi setup and Cobra Toolbox initialization
+%%             Gurobi setup and Cobra Toolbox initialization             %%
 gurobi_setup;
 initCobraToolbox(false);
 setenv('GUROBI_PATH', 'C:\gurobi1001\win64\matlab');
 changeCobraSolver('gurobi', 'all');
 
-%% Load data
+%%                              Load data                                %%
 % Load transcriptomics data, housekeeping genes, and metabolic model
 data = readtable('Merged_data.xlsx'); % Transcriptomics data
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
-model_genes = model.genes;
+model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 
-%ensure the model does not contain blocked reactions
+%%          Ensure the model does not contain blocked reactions          %%
 [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
-model = fluxConsistModel
-model
+model = fluxConsistModel; % load the new model with no blocked reactions
 
-%% Preprocessing
-genes = data(:, 2);
+%%                              Preprocessing                            %%
+% Colect the data needed to create the table
+genes = data(:, 2); % take the Entrez_ID (needed for findUsedGenesLevels)
 Ensembl_id = data(:, 1);
+sampleNames = data.Properties.VariableNames(7:end); 
 data_to_log = table2array(data(:, 7:end));
-logged_data = log10(data_to_log + 1);
-log_data = [Ensembl_id, genes, array2table(logged_data)];
-col_names = data.Properties.VariableNames(7:end);
-log_data.Properties.VariableNames(3:end) = col_names;
-log_data.Properties.VariableNames{2} = 'gene';
-log_data.Properties.VariableNames{1} = 'Ensembl_GeneID';
+logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0 values) 
 
-%% Processing the gene expression dataset
-num_samples = width(log_data(:, 3:end));
+%Create the new table with the data obtained before
+log_data = [Ensembl_id, genes, array2table(logged_data)]; % Load the data on the new table  
+log_data.Properties.VariableNames(3:end) = sampleNames; % Variables names 
+log_data.Properties.VariableNames{2} = 'gene'; % Change Entrez_ID name to gene (To run findUsedGenesLevels)
+
+%%              Processing the gene expression dataset                   %% REVIEW IT
+% Define new cells and new Matrixes
 allGenes = {};
-sampleNames = log_data.Properties.VariableNames(3:end);
 geneExpressionMatrix = [];
 
-for i = 1:num_samples
+for i = 1: width(sampleNames)
     log_data.value = log_data{:, i + 2} - min(log_data{:, i + 2});
     [geneList, geneExpression] = findUsedGenesLevels(model, log_data);
     allGenes = unique([allGenes; geneList]);
@@ -50,19 +50,25 @@ end
 
 metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', allGenes, 'VariableNames', sampleNames);
 
-%% Taking gene expression from the metabolic genes
-met_genes = metabolic_genes.Properties.RowNames;
-index_names = ismember(log_data.Ensembl_GeneID, met_genes);
+%%          Taking gene expression from the metabolic genes              %%
+% Obtained the metabolic genes, also take their normalized expression
+met_genes_names = metabolic_genes.Properties.RowNames; % 2495
+index_names = ismember(log_data.Ensembl_GeneID, met_genes_names); % here 2471 genes
 data_met = log_data(index_names, :);
 logdata = data_met(:, 3:end);
+
+% Create a vector with metabolic genes ENSEMBL_IDs
 gene_names = data_met{:, 1};
 
-%% Local thresholding
+%%                          Local thresholding                           %%
+% Set the upper and lower threshold
 up_percentage = 75;
 low_percentage = 25;
+
+% Use the localT2 function
 [expression_scoreMatrix, coreMat] = localT2_new(logdata, low_percentage, up_percentage);
 
-%% Obtain core-genes
+%%                          Obtain core-genes                            %%
 % Core gene matrix
 Coregene_Matrix = expression_scoreMatrix >= 1;
 
@@ -71,49 +77,53 @@ coreGenesStructure = cell(1, size(Coregene_Matrix, 2));
 
 for i = 1:size(Coregene_Matrix, 2)
     activeGeneIndices = find(Coregene_Matrix(:, i)); % Gene active indexes
-    coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene actie names
-end
-%% AND rules
-% Get the original GPR rules of the model
-originalGPRs = model.grRules;
-
-% Process the rules to remove the "AND" parts.
-processedGPRs = cell(size(originalGPRs));
-for i = 1:length(originalGPRs)
-    originalRule = originalGPRs{i};
-    
-    % Remove any "OR" parts using regular expressions
-    processedRule = regexprep(originalRule, '\s*or\s*', ''); % Remove "or" and spaces change and to "or".
-    
-    processedGPRs{i} = processedRule;
+    coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene active names
 end
 
-% Creates a new model with the processed GPR rules
-newModel = model;
-newModel.grRules = processedGPRs;
 
-%% Map to Expression
-% Adjusting the structure to what is likely expected by the function
-expressionData.gene = gene_names; % Assuming gene_names is a cell array of gene identifiers
-expressionData.value = expression_scoreMatrix; % Assuming this is a numeric matrix of expression values
+%% AND rules CHECK IT SERIOUSLY
+% % Get the original GPR rules of the model
+% originalGPRs = model.grRules;
+% 
+% % Process the rules to remove the "AND" parts.
+% processedGPRs = cell(size(originalGPRs));
+% for i = 1:length(originalGPRs)
+%     originalRule = originalGPRs{i};
+% 
+%     % Remove any "OR" parts using regular expressions
+%     processedRule = regexprep(originalRule, '\s*or\s*', ''); % Remove "or" and spaces change and to "or".
+% 
+%     processedGPRs{i} = processedRule;
+% end
+% 
+% % Creates a new model with the processed GPR rules
+% newModel = model;
+% newModel.grRules = processedGPRs;
 
+%%                          Map to Expression                            %%
+% Create expressionData structure to use mapExpressionToReactions function
+expressionData.gene = gene_names; 
+expressionData.value = expression_scoreMatrix; 
+
+% Initialize variables
 Rxns_local25_75 = [];
 geneUsed_local25_75 = {};
 parsedGPR_local25_75 = {};
 
 % Iterate over each sample
-for i = 1:length(sampleNames) % Assuming sampleNames is a list of your samples
+for i = 1:width(sampleNames)
     % Extract the expression data for the current sample
     expressionDataSample = struct();
     expressionDataSample.gene = expressionData.gene;
     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
 
     % Map expression data to reactions for the current sample
-    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(newModel, expressionDataSample, 'false');
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping
 end
+%%
 
 % Define reactionNamesPerSample
 reactionNamesPerSample = cell(size(sampleNames));
@@ -160,43 +170,6 @@ for i = 1:numColumns
     % Almacena los nombres únicos de los genes en la cell array de resultados
     result{i} = unique(geneNames);
 end
-
-
-
-
-
-
-
-% %% Obtain the core genes from core reactions
-% geneData = cell(size(ActiveRxns_local25_75));
-% 
-% % Turn reactions to genes
-% for i = 1:length(ActiveRxns_local25_75)
-%     activeReactionsIndices = ActiveRxns_local25_75{i};
-%     activeReactionsNames = model.rxns(activeReactionsIndices);
-% 
-%     geneList = findGenesFromRxns(newModel, activeReactionsNames);
-% 
-%     geneData{i} = geneList;
-% end
-% % Remove the duplicated genes
-% numColumns = size(geneData, 2);
-% 
-% uniqueGenesArray = cell(1, numColumns);
-% 
-% for i = 1:numColumns
-%     genesInColumn = geneData{i};
-% 
-%     % If the genes are in nested cells, flatten them out
-%     if iscell(genesInColumn{1})
-%         genesInColumn = vertcat(genesInColumn{:});
-%     end
-% 
-%     % Remove duplicate gene names
-%     uniqueGenes = unique(genesInColumn);
-% 
-%     uniqueGenesArray{i} = uniqueGenes;
-% end
 
 %% Compare both and get the names of matching genes
 numColumns = length(result);
