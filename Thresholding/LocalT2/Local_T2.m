@@ -16,9 +16,11 @@ model = model.model;
 model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 
 %%          Ensure the model does not contain blocked reactions          %%
-[fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
-model = fluxConsistModel; % load the new model with no blocked reactions
-
+% [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
+% model = fluxConsistModel; % load the new model with no blocked reactions
+% save('model', 'model');
+model = load('model.mat');
+model = model.model;
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
 genes = data(:, 2); % take the Entrez_ID (needed for findUsedGenesLevels)
@@ -81,7 +83,7 @@ for i = 1:size(Coregene_Matrix, 2)
 end
 
 
-%% AND rules CHECK IT SERIOUSLY
+%% AND rules CHECK IT SERIOUSLY I THINK NOW THEY ARE NO NEEDED
 % % Get the original GPR rules of the model
 % originalGPRs = model.grRules;
 % 
@@ -100,7 +102,7 @@ end
 % newModel = model;
 % newModel.grRules = processedGPRs;
 
-%%                          Map to Expression                            %%
+%%                          Map to Expression                            %% WHY i CAN'T SEE GENE_USED 
 % Create expressionData structure to use mapExpressionToReactions function
 expressionData.gene = gene_names; 
 expressionData.value = expression_scoreMatrix; 
@@ -110,53 +112,63 @@ Rxns_local25_75 = [];
 geneUsed_local25_75 = {};
 parsedGPR_local25_75 = {};
 
+
+% I COMMENTED BECAUSE IT TAKES A LOT OF TIME, SO I SAVE THE RESULTS AND
+% JUST LOAD THE,
+
 % Iterate over each sample
-for i = 1:width(sampleNames)
-    % Extract the expression data for the current sample
-    expressionDataSample = struct();
-    expressionDataSample.gene = expressionData.gene;
-    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+% for i = 1:width(sampleNames)
+%     % Extract the expression data for the current sample
+%     expressionDataSample = struct();
+%     expressionDataSample.gene = expressionData.gene;
+%     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+% 
+%     % Map expression data to reactions for the current sample
+%     [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+%     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
+%     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
+%     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
+% end
 
-    % Map expression data to reactions for the current sample
-    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
-    Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
-    geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
-    parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
-end
-%%
+% Save the results
+% save('Rxns_local25_75', "Rxns_local25_75");
+% save('geneUsed_local25_75', 'geneUsed_local25_75');
+% save('parsedGPR_local25_75', 'parsedGPR_local25_75');
 
-% Define reactionNamesPerSample
+% Load them
+Rxns_local25_75 = load('Rxns_local25_75.mat');
+Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
+geneUsed_local25_75 = load('geneUsed_local25_75.mat');
+geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
+parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
+parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+
+%%                      Set the core reactions                           %%
+% Define variable
 reactionNamesPerSample = cell(size(sampleNames));
 
-% Obtén los nombres de las reacciones activas para cada muestra
+% Obtain core reactions names
 for i = 1:length(sampleNames)
-    activeReactions = find(Rxns_local25_75(:, i) >= 1);  % Encuentra reacciones activas
-    reactionNamesPerSample{i} = model.rxns(activeReactions);  % Guarda los nombres de las reacciones activas
+    activeReactions = find(Rxns_local25_75(:, i) >= 1);  % Active reactions indexes
+    reactionNamesPerSample{i} = model.rxns(activeReactions);  % Keep active reactions names for each sample
 end
-%% Check core reactions
 
-for i = 1:length(sampleNames)
-    ActiveRxns_local25_75{i} = (find(Rxns_local25_75(:, i)>=1));
-end
-disp(ActiveRxns_local25_75)
-% creo que solo me da los números, ssacar los nombres
-
-%% Obtain the core genes from core reactions
-% Supongamos que 'data' es tu cell array original
+%%              Obtain the core genes from core reactions                %% THERE IS SOMETHING WRONG HERE, I HAVE MORE GENES THAT I WOULD BE EXPECTED
+% Initialize variables
 numColumns = size(parsedGPR_local25_75, 2);
-result = cell(1, numColumns); % Inicializa la cell array de resultados
+CoreG_from_CoreR = cell(1, numColumns); 
 
 for i = 1:numColumns
-    geneNames = {}; % Para almacenar temporalmente los nombres de los genes
+    geneNames = {}; % Keep temporarly the gene's names
     for j = 1:size(parsedGPR_local25_75{i}, 1)
-        % Revisa si el contenido de la cell es otra cell array
+        % Check if the data is inside other array
         if iscell(parsedGPR_local25_75{i}{j})
-            % Si es otra cell array, recórrela
+            % If there is another cell, it go through it
             for k = 1:size(parsedGPR_local25_75{i}{j}, 1)
-                % Continúa con este proceso si te encuentras con más cell arrays anidadas
+                % Continue trying to find new nested cells
                 if iscell(parsedGPR_local25_75{i}{j}{k})
                     for l = 1:size(parsedGPR_local25_75{i}{j}{k}, 1)
-                        % Aquí finalmente asumimos que has llegado a los nombres de los genes
+                        % Arrived to gene names
                         geneNames = [geneNames; parsedGPR_local25_75{i}{j}{k}{l}];
                     end
                 else
@@ -167,34 +179,33 @@ for i = 1:numColumns
             geneNames = [geneNames; parsedGPR_local25_75{i}{j}];
         end
     end
-    % Almacena los nombres únicos de los genes en la cell array de resultados
-    result{i} = unique(geneNames);
+    % Keep just the unique names
+    CoreG_from_CoreR{i} = unique(geneNames);
 end
 
-%% Compare both and get the names of matching genes
-numColumns = length(result);
+%%          Compare both and get the names of matching genes             %% THIS ONE WAS A SANITY CHECK TO SEE IF ALL OF THE GENES WERE INCLUDED, APPARENTLY NO
+numColumns = length(CoreG_from_CoreR);
 matchedGenesNames = cell(1, numColumns); 
 
 for i = 1:numColumns
-    uniqueGenes = result{i};    
+    uniqueGenes = CoreG_from_CoreR{i};    
     activeGenes = coreGenesStructure{i};
 
     geneMatches = ismember(uniqueGenes, activeGenes);
     matchedGenes = uniqueGenes(geneMatches); 
     matchedGenesNames{i} = matchedGenes;  
 end
-%% 
-%%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with 
-% core genes and reactions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Housekeeping genes analysis
+%%                                                                       %%
+%%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
+%%%%%%%%%%%%%%%%%             core genes and reactions          %%%%%%%%%%%
+
+%%                    Housekeeping genes analysis                        %%
 ens_hkg = h_k_g.converted_alias;
-% Check which ones are metabolic
-% Find indexes of the genes that are present in the metabolic model. 
 index_names = ismember(ens_hkg, model_genes);
-% take the rows of the dataset that match the indexes obtained before, with all the data 
 met_hkg = ens_hkg(index_names);
 
-results = findRxnsFromGenes(model, met_hkg);
+% Use this function to find the housekeeping reactions names
+results = findRxnsFromGenes(model, met_hkg); % Gives a structure, so for loop to extract the names
 
 
 % Extract unique housekeeping reaction names
@@ -208,15 +219,16 @@ for i = 1:length(fields)
         housekeep_react{end+1, 1} = firstcol;
     end
 end
+
+% Just want the name one time
 housekeep_react_unique = unique(housekeep_react);
 disp(housekeep_react_unique);
 
-%% Compare the number of housekeeping core genes
-numSample_genes = numel(coreGenesStructure);
+%%           Compare the number of housekeeping core genes               %% SEEMS TO BE RIGHT
 housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
 totalHousekeepingGenes = numel(met_hkg);
 
-for i = 1:numSample_genes
+for i = 1:numColumns
     coreGenes = coreGenesStructure{i};
     housekeepingGeneNames = met_hkg;
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
@@ -226,11 +238,10 @@ for i = 1:numSample_genes
 end
 
 %% Compare the number of housekeeping core reactions
-numSample = numel(reactionNamesPerSample);
 housekep_core_react = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
 
-for i = 1:numSample
+for i = 1:numColumns
     coreReactions = reactionNamesPerSample{i};
     housekeepingInCore = ismember(housekeep_react_unique, coreReactions);
     housekep_core_react(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
