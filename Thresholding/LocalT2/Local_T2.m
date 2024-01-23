@@ -32,7 +32,7 @@ logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0
 %Create the new table with the data obtained before
 log_data = [Ensembl_id, genes, array2table(logged_data)]; % Load the data on the new table  
 log_data.Properties.VariableNames(3:end) = sampleNames; % Variables names 
-log_data.Properties.VariableNames{2} = 'gene'; % Change Entrez_ID name to gene (To run findUsedGenesLevels)
+log_data.Properties.VariableNames{1} = 'gene'; % Change Entrez_ID name to gene (To run findUsedGenesLevels)
 
 %%              Processing the gene expression dataset                   %% REVIEW IT
 % Define new cells and new Matrixes
@@ -52,15 +52,18 @@ end
 
 metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', allGenes, 'VariableNames', sampleNames);
 
-%%          Taking gene expression from the metabolic genes              %%
-% Obtained the metabolic genes, also take their normalized expression
-met_genes_names = metabolic_genes.Properties.RowNames; % 2495
-index_names = ismember(log_data.Ensembl_GeneID, met_genes_names); % here 2471 genes
-data_met = log_data(index_names, :);
-logdata = data_met(:, 3:end);
+%%
+metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2));
 
-% Create a vector with metabolic genes ENSEMBL_IDs
-gene_names = data_met{:, 1};
+% %%          Taking gene expression from the metabolic genes              %%
+% % Obtained the metabolic genes, also take their normalized expression
+% met_genes_names = metabolic_genes.Properties.RowNames; % 2495
+% index_names = ismember(log_data.Ensembl_GeneID, met_genes_names); % here 2471 genes
+% data_met = log_data(index_names, :);
+% logdata = data_met(:, 3:end);
+% 
+% % Create a vector with metabolic genes ENSEMBL_IDs
+% gene_names = data_met{:, 1};
 
 %%                          Local thresholding                           %%
 % Set the upper and lower threshold
@@ -68,11 +71,12 @@ up_percentage = 75;
 low_percentage = 25;
 
 % Use the localT2 function
-[expression_scoreMatrix, coreMat] = localT2_new(logdata, low_percentage, up_percentage);
+[expression_scoreMatrix, coreMat] = localT2_new(metabolic_genes, low_percentage, up_percentage);
 
 %%                          Obtain core-genes                            %%
 % Core gene matrix
 Coregene_Matrix = expression_scoreMatrix >= 1;
+gene_names = metabolic_genes{:,1};
 
 % Link with gene names
 coreGenesStructure = cell(1, size(Coregene_Matrix, 2));
@@ -116,7 +120,7 @@ parsedGPR_local25_75 = {};
 % I COMMENTED BECAUSE IT TAKES A LOT OF TIME, SO I SAVE THE RESULTS AND
 % JUST LOAD THE,
 
-% Iterate over each sample
+% % Iterate over each sample
 % for i = 1:width(sampleNames)
 %     % Extract the expression data for the current sample
 %     expressionDataSample = struct();
@@ -129,8 +133,8 @@ parsedGPR_local25_75 = {};
 %     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
 %     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
 % end
-
-% Save the results
+% 
+% % Save the results
 % save('Rxns_local25_75', "Rxns_local25_75");
 % save('geneUsed_local25_75', 'geneUsed_local25_75');
 % save('parsedGPR_local25_75', 'parsedGPR_local25_75');
@@ -184,17 +188,39 @@ for i = 1:numColumns
 end
 
 %%          Compare both and get the names of matching genes             %% THIS ONE WAS A SANITY CHECK TO SEE IF ALL OF THE GENES WERE INCLUDED, APPARENTLY NO
+% numColumns = length(CoreG_from_CoreR);
+% matchedGenesNames = cell(1, numColumns); 
+
+% for i = 1:numColumns
+%     uniqueGenes = CoreG_from_CoreR{i}; 
+%     activeGenes = coreGenesStructure{i};
+%     activeGenes = num2cell(activeGenes);
+% 
+%     geneMatches = ismember(uniqueGenes, activeGenes);
+%     matchedGenes = uniqueGenes(geneMatches); 
+%     matchedGenesNames{i} = matchedGenes;  
+% end
 numColumns = length(CoreG_from_CoreR);
 matchedGenesNames = cell(1, numColumns); 
 
 for i = 1:numColumns
-    uniqueGenes = CoreG_from_CoreR{i};    
+    uniqueGenes = CoreG_from_CoreR{i}; 
     activeGenes = coreGenesStructure{i};
+
+    % Check if uniqueGenes and activeGenes are cell arrays of strings
+    if isnumeric(uniqueGenes)
+        uniqueGenes = cellstr(num2str(uniqueGenes));
+    end
+
+    if isnumeric(activeGenes)
+        activeGenes = cellstr(num2str(activeGenes));
+    end
 
     geneMatches = ismember(uniqueGenes, activeGenes);
     matchedGenes = uniqueGenes(geneMatches); 
     matchedGenesNames{i} = matchedGenes;  
 end
+
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%             core genes and reactions          %%%%%%%%%%%
