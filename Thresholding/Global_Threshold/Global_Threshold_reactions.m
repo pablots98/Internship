@@ -28,8 +28,8 @@ logged_data = log10(data_to_log + 1);
 log_data = [Ensembl_id, genes, array2table(logged_data)];
 col_names = data.Properties.VariableNames(7:end);
 log_data.Properties.VariableNames(3:end) = col_names;
-log_data.Properties.VariableNames{2} = 'gene';
-log_data.Properties.VariableNames{1} = 'Ensembl_GeneID';
+log_data.Properties.VariableNames{1} = 'gene';
+log_data.Properties.VariableNames{2} = 'Ensembl_GeneID';
 
 %% Process gene expression dataset
 num_samples = width(log_data(:, 3:end));
