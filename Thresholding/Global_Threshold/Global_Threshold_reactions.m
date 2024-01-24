@@ -7,38 +7,40 @@ initCobraToolbox(false);
 setenv('GUROBI_PATH', 'C:\gurobi1001\win64\matlab');
 changeCobraSolver('gurobi', 'all');
 
-%% Load necessary data
+%%                              Load data                                %%
+% Load transcriptomics data, housekeeping genes, and metabolic model
 data = readtable('Merged_data.xlsx'); % Transcriptomics data
-h_k_g = readtable('NM2ENSG.xlsx'); % Housekeeping genes with Ensembl IDs
+h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
-%First, in all model extraction it is good to pre_process the model to
-%ensure it does not contain blocked reactions
 
-[fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
-model = fluxConsistModel
-model
-%% Preprocess the data
-genes = data(:, 2); % Keep the gene column
-Ensembl_id = data(:, 1); % Keep the Ensembl ID column
-
-% Normalize the expression data (log10(x + 1))
+%%          Ensure the model does not contain blocked reactions          %%
+% [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
+% model = fluxConsistModel; % load the new model with no blocked reactions
+% save('model', 'model');
+model = load('model.mat');
+model = model.model;
+model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
+%%                              Preprocessing                            %%
+% Colect the data needed to create the table
+% genes = data(:, 2); % take the Entrez_ID (needed for findUsedGenesLevels) WE CAN DELETE IT
+Ensembl_id = data(:, 1);
+sampleNames = data.Properties.VariableNames(7:end); 
 data_to_log = table2array(data(:, 7:end));
-logged_data = log10(data_to_log + 1);
-log_data = [Ensembl_id, genes, array2table(logged_data)];
-col_names = data.Properties.VariableNames(7:end);
-log_data.Properties.VariableNames(3:end) = col_names;
-log_data.Properties.VariableNames{1} = 'gene';
-log_data.Properties.VariableNames{2} = 'Ensembl_GeneID';
+logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0 values) 
 
-%% Process gene expression dataset
-num_samples = width(log_data(:, 3:end));
+%Create the new table with the data obtained before
+log_data = [Ensembl_id, array2table(logged_data)]; % Load the data on the new table  
+log_data.Properties.VariableNames(2:end) = sampleNames; % Variables names 
+log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (To run findUsedGenesLevels)
+
+%%              Processing the gene expression dataset                   %% 
+% Define new cells and new Matrixes
 allGenes = {};
-sampleNames = log_data.Properties.VariableNames(3:end);
 geneExpressionMatrix = [];
 
-for i = 1:num_samples
-    log_data.value = log_data{:, i + 2} - min(log_data{:, i + 2});
+for i = 1: width(sampleNames)
+    log_data.value = log_data{:, i + 1} - min(log_data{:, i + 1});
     [geneList, geneExpression] = findUsedGenesLevels(model, log_data);
     allGenes = unique([allGenes; geneList]);
     tempMatrix = zeros(length(allGenes), 1);
@@ -50,18 +52,14 @@ end
 
 metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', allGenes, 'VariableNames', sampleNames);
 
-% Take the metabolic genes expression data
-met_genes = metabolic_genes.Properties.RowNames
-% Find indexes of the genes that are present in the metabolic model. 
-index_names = ismember(log_data.Ensembl_GeneID, met_genes);
-% Take the rows of the dataset that match the indexes obtained before, with all the data 
-data_met = log_data(index_names, :);
+% Delete the NaN values
+metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2));
 
-%% Global thresholding to determine core and non-core genes
+%%      Global thresholding to determine core and non-core genes         %%
 results = table;
 
-for i = 1:length(col_names)
-    col_name = col_names{i};
+for i = 1:length(sampleNames)
+    col_name = sampleNames{i};
     expData = metabolic_genes(:, 1);
     expData(:, 2) = metabolic_genes(:, col_name);
     expData.Properties.VariableNames{1} = 'gene';
@@ -80,7 +78,7 @@ results_CoreGenes = results;
 results_CoreGenes(1, :) = [];
 disp(results_CoreGenes);
 
-%% Map core genes to core reactions for each sample
+%%          Map core genes to core reactions for each sample             %%
 numSamples = height(results_CoreGenes);
 expressionDataSamples = cell(numSamples, 1);
 
@@ -130,13 +128,13 @@ else
     disp('No repeated names');
 end
 
-%% Housekeeping genes analysis (CHECK, I THINK THIS IS WRONG)
-genes_table = data_met.Ensembl_GeneID;
-index_names = ismember(genes_table, h_k_g.converted_alias);
-hkg_met = data_met(index_names, :);
-hkg_met_ens = hkg_met(:, "Ensembl_GeneID");
-geneIDs = table2cell(hkg_met_ens);
-[results] = findRxnsFromGenes(model, geneIDs);
+%%                  Housekeeping genes analysis                          %% (CHECK, I THINK THIS IS WRONG)
+gene_names = metabolic_genes.Properties.RowNames;
+index_names = ismember(gene_names, h_k_g.converted_alias);
+hkg_met = metabolic_genes(index_names, :);
+hkg_met_ens = hkg_met.Properties.RowNames;
+%geneIDs = table2cell(hkg_met_ens);
+[results] = findRxnsFromGenes(model, hkg_met_ens);
 
 % Extract unique housekeeping reaction names
 fields = fieldnames(results);
@@ -154,28 +152,28 @@ disp(housekeep_react_unique);
 
 %% Compare the number of housekeeping core genes
 numSample_genes = numel(results_CoreGenes.CoreGeneIDs);
-housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
-totalHousekeepingGenes = numel(hkg_met.Ensembl_GeneID);
+housekep_core_gene_G = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
+totalHousekeepingGenes = numel(hkg_met_ens);
 
 for i = 1:numSample_genes
     coreGenes = results_CoreGenes.CoreGeneIDs{i};
-    housekeepingGeneNames = hkg_met.Ensembl_GeneID;
+    housekeepingGeneNames = hkg_met_ens;
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
-    housekep_core_gene(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
-    housekep_core_gene(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
-    housekep_core_gene(i).percentage = (housekep_core_gene(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
+    housekep_core_gene_G(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
+    housekep_core_gene_G(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
+    housekep_core_gene_G(i).percentage = (housekep_core_gene_G(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
 end
 
 %% Compare the number of housekeeping core reactions
 numSample = numel(reactionNamesPerSample);
-housekep_core_react = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
+housekep_core_react_G = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
 
 for i = 1:numSample
     coreReactions = reactionNamesPerSample{i};
     housekeepingInCore = ismember(housekeep_react_unique, coreReactions);
-    housekep_core_react(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
-    housekep_core_react(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
-    housekep_core_react(i).percentage = (housekep_core_react(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
+    housekep_core_react_G(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
+    housekep_core_react_G(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
+    housekep_core_react_G(i).percentage = (housekep_core_react_G(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
 
