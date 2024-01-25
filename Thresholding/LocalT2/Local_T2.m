@@ -128,57 +128,57 @@ for i = 1:length(sampleNames)
     reactionNamesPerSample{i} = model.rxns(activeReactions);  % Keep active reactions names for each sample
 end
 
-%%              Obtain the core genes from core reactions                %% THERE IS SOMETHING WRONG HERE, I HAVE MORE GENES THAT I WOULD BE EXPECTED
-% Initialize variables
-numColumns = size(parsedGPR_local25_75, 2);
-CoreG_from_CoreR = cell(1, numColumns); 
-
-for i = 1:numColumns
-    geneNames = {}; % Keep temporarly the gene's names
-    for j = 1:size(parsedGPR_local25_75{i}, 1)
-        % Check if the data is inside other array
-        if iscell(parsedGPR_local25_75{i}{j})
-            % If there is another cell, it go through it
-            for k = 1:size(parsedGPR_local25_75{i}{j}, 1)
-                % Continue trying to find new nested cells
-                if iscell(parsedGPR_local25_75{i}{j}{k})
-                    for l = 1:size(parsedGPR_local25_75{i}{j}{k}, 1)
-                        % Arrived to gene names
-                        geneNames = [geneNames; parsedGPR_local25_75{i}{j}{k}{l}];
-                    end
-                else
-                    geneNames = [geneNames; parsedGPR_local25_75{i}{j}{k}];
-                end
-            end
-        else
-            geneNames = [geneNames; parsedGPR_local25_75{i}{j}];
-        end
-    end
-    % Keep just the unique names
-    CoreG_from_CoreR{i} = unique(geneNames);
-end
-
-%%          Compare both and get the names of matching genes             %% THIS ONE WAS A SANITY CHECK TO SEE IF ALL OF THE GENES WERE INCLUDED, APPARENTLY NO
-numColumns = length(CoreG_from_CoreR);
-matchedGenesNames = cell(1, numColumns); 
-
-for i = 1:numColumns
-    uniqueGenes = CoreG_from_CoreR{i}; 
-    activeGenes = coreGenesStructure{i};
-
-    % Check if uniqueGenes and activeGenes are cell arrays of strings
-    if isnumeric(uniqueGenes)
-        uniqueGenes = cellstr(num2str(uniqueGenes));
-    end
-
-    if isnumeric(activeGenes)
-        activeGenes = cellstr(num2str(activeGenes));
-    end
-
-    geneMatches = ismember(uniqueGenes, activeGenes);
-    matchedGenes = uniqueGenes(geneMatches); 
-    matchedGenesNames{i} = matchedGenes;  
-end
+% %%              Obtain the core genes from core reactions                %% THERE IS SOMETHING WRONG HERE, I HAVE MORE GENES THAT I WOULD BE EXPECTED
+% % Initialize variables
+% numColumns = size(parsedGPR_local25_75, 2);
+% CoreG_from_CoreR = cell(1, numColumns); 
+% 
+% for i = 1:numColumns
+%     geneNames = {}; % Keep temporarly the gene's names
+%     for j = 1:size(parsedGPR_local25_75{i}, 1)
+%         % Check if the data is inside other array
+%         if iscell(parsedGPR_local25_75{i}{j})
+%             % If there is another cell, it go through it
+%             for k = 1:size(parsedGPR_local25_75{i}{j}, 1)
+%                 % Continue trying to find new nested cells
+%                 if iscell(parsedGPR_local25_75{i}{j}{k})
+%                     for l = 1:size(parsedGPR_local25_75{i}{j}{k}, 1)
+%                         % Arrived to gene names
+%                         geneNames = [geneNames; parsedGPR_local25_75{i}{j}{k}{l}];
+%                     end
+%                 else
+%                     geneNames = [geneNames; parsedGPR_local25_75{i}{j}{k}];
+%                 end
+%             end
+%         else
+%             geneNames = [geneNames; parsedGPR_local25_75{i}{j}];
+%         end
+%     end
+%     % Keep just the unique names
+%     CoreG_from_CoreR{i} = unique(geneNames);
+% end
+% 
+% %%          Compare both and get the names of matching genes             %% THIS ONE WAS A SANITY CHECK TO SEE IF ALL OF THE GENES WERE INCLUDED, APPARENTLY NO
+% numColumns = length(CoreG_from_CoreR);
+% matchedGenesNames = cell(1, numColumns); 
+% 
+% for i = 1:numColumns
+%     uniqueGenes = CoreG_from_CoreR{i}; 
+%     activeGenes = coreGenesStructure{i};
+% 
+%     % Check if uniqueGenes and activeGenes are cell arrays of strings
+%     if isnumeric(uniqueGenes)
+%         uniqueGenes = cellstr(num2str(uniqueGenes));
+%     end
+% 
+%     if isnumeric(activeGenes)
+%         activeGenes = cellstr(num2str(activeGenes));
+%     end
+% 
+%     geneMatches = ismember(uniqueGenes, activeGenes);
+%     matchedGenes = uniqueGenes(geneMatches); 
+%     matchedGenesNames{i} = matchedGenes;  
+% end
 
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
