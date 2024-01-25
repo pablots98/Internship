@@ -209,7 +209,7 @@ end
 housekeep_react_unique = unique(housekeep_react);
 disp(housekeep_react_unique);
 
-%%           Compare the number of housekeeping core genes               %% SEEMS TO BE RIGHT
+%%           Compare the number of housekeeping core genes               %%
 housekep_core_gene_L = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
 totalHousekeepingGenes = numel(met_hkg);
 
@@ -225,7 +225,7 @@ for i = 1:numColumns
     housekep_core_gene_L(i).percentage = (housekep_core_gene_L(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
 end
 
-%% Compare the number of housekeeping core reactions
+%%          Compare the number of housekeeping core reactions            %%
 housekep_core_react_L = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
 

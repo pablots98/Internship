@@ -209,8 +209,8 @@ end
 housekeep_react_unique = unique(housekeep_react);
 disp(housekeep_react_unique);
 
-%%           Compare the number of housekeeping core genes               %% SEEMS TO BE RIGHT
-housekep_core_gene = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
+%%           Compare the number of housekeeping core genes               %%
+housekep_core_gene_L = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
 totalHousekeepingGenes = numel(met_hkg);
 
 for i = 1:numColumns
@@ -220,20 +220,20 @@ for i = 1:numColumns
         coreGenes = cellstr(num2str(coreGenes));
     end
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
-    housekep_core_gene(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
-    housekep_core_gene(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
-    housekep_core_gene(i).percentage = (housekep_core_gene(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
+    housekep_core_gene_L(i).numHousekeepingCoreGenes = sum(housekeepingInCore_g);
+    housekep_core_gene_L(i).housekeepingCoreGenes = housekeepingGeneNames(housekeepingInCore_g);
+    housekep_core_gene_L(i).percentage = (housekep_core_gene_L(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
 end
 
-%% Compare the number of housekeeping core reactions
-housekep_core_react = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
+%%          Compare the number of housekeeping core reactions            %%
+housekep_core_react_L = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
 
 for i = 1:numColumns
     coreReactions = reactionNamesPerSample{i};
     housekeepingInCore = ismember(housekeep_react_unique, coreReactions);
-    housekep_core_react(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
-    housekep_core_react(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
-    housekep_core_react(i).percentage = (housekep_core_react(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
+    housekep_core_react_L(i).numHousekeepingCoreReactions = sum(housekeepingInCore);
+    housekep_core_react_L(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
+    housekep_core_react_L(i).percentage = (housekep_core_react_L(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
 
