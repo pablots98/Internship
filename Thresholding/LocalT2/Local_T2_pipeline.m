@@ -23,7 +23,6 @@ model = model.model;
 model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
-% genes = data(:, 2); % take the Entrez_ID (needed for findUsedGenesLevels) WE CAN DELETE IT
 Ensembl_id = data(:, 1);
 sampleNames = data.Properties.VariableNames(7:end); 
 data_to_log = table2array(data(:, 7:end));
@@ -70,38 +69,34 @@ for i = 1:size(adjusted_matrix, 2)
     coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene active names
 end
 
-%%                          Map to Expression                            %%  
-% Create expressionData structure to use mapExpressionToReactions function
-% expressionData.gene = gene_names; 
-% expressionData.value = expression_scoreMatrix; 
-% 
-% %Initialize variables
-% Rxns_local25_75 = [];
-% geneUsed_local25_75 = {};
-% parsedGPR_local25_75 = {};
-% 
-% 
-% %I COMMENTED BECAUSE IT TAKES A LOT OF TIME, SO I SAVE THE RESULTS AND
-% %JUST LOAD THE,
-% 
-% %Iterate over each sample
-% for i = 1:width(sampleNames)
-%     Extract the expression data for the current sample
-%     expressionDataSample = struct();
-%     expressionDataSample.gene = expressionData.gene;
-%     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
-% 
-%     Map expression data to reactions for the current sample
-%     [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
-%     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
-%     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
-%     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
-% end
-% 
-% %Save the results
-% save('Rxns_local25_75', "Rxns_local25_75");
-% save('geneUsed_local25_75', 'geneUsed_local25_75');
-% save('parsedGPR_local25_75', 'parsedGPR_local25_75');
+%                          Map to Expression                            %%  
+Create expressionData structure to use mapExpressionToReactions function
+expressionData.gene = gene_names; 
+expressionData.value = expression_scoreMatrix; 
+
+%Initialize variables
+Rxns_local25_75 = [];
+geneUsed_local25_75 = {};
+parsedGPR_local25_75 = {};
+
+%Iterate over each sample
+for i = 1:width(sampleNames)
+    Extract the expression data for the current sample
+    expressionDataSample = struct();
+    expressionDataSample.gene = expressionData.gene;
+    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+
+    Map expression data to reactions for the current sample
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+    Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
+    geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
+    parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
+end
+
+%Save the results
+save('Rxns_local25_75', "Rxns_local25_75");
+save('geneUsed_local25_75', 'geneUsed_local25_75');
+save('parsedGPR_local25_75', 'parsedGPR_local25_75');
 
 % Load them
 Rxns_local25_75 = load('Rxns_local25_75.mat');

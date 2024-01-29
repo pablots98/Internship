@@ -23,7 +23,6 @@ model = model.model;
 model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
-% genes = data(:, 2); % take the Entrez_ID (needed for findUsedGenesLevels) WE CAN DELETE IT
 Ensembl_id = data(:, 1);
 sampleNames = data.Properties.VariableNames(7:end); 
 data_to_log = table2array(data(:, 7:end));
@@ -39,21 +38,18 @@ log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (
 allGenes = {};
 geneExpressionMatrix = [];
 
+
 for i = 1: width(sampleNames)
-    log_data.value = log_data{:, i + 1} - min(log_data{:, i + 1});
-    [geneList, geneExpression] = findUsedGenesLevels(model, log_data);
-    allGenes = unique([allGenes; geneList]);
-    tempMatrix = zeros(length(allGenes), 1);
-    [~, geneIdx] = ismember(geneList, allGenes);
-    tempMatrix(geneIdx) = geneExpression;
-    geneExpressionMatrix = [geneExpressionMatrix, tempMatrix];
+    log_data.value = log_data{:, i + 1}; %- min(log_data{:, i + 1}); % shift minimum to 0 ¡¡ ASK MARIAN HOW HE WANT TO NORMALIZE IT!! ACTUALLY IT SAYS FPKM, SO I ALREADY HAVE IT
+    [geneList, geneExpression] = findUsedGenesLevels(model, log_data); % Athough is just for the last sample, the genes present in the models are always the same
+    geneExpressionMatrix = [geneExpressionMatrix, geneExpression'];
     log_data.value = [];
 end
 
-metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', allGenes, 'VariableNames', sampleNames);
+metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', geneList, 'VariableNames', sampleNames);
 
 % Delete the NaN values
-metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2));
+metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2)); % So we can use the local thresholding 
 
 %%      Global thresholding to determine core and non-core genes         %%
 results = table;
