@@ -123,6 +123,32 @@ end
 
 %%              Obtain the core genes from core reactions                %% THERE IS SOMETHING WRONG HERE, I HAVE MORE GENES THAT I WOULD BE EXPECTED
 
+numSamples = size(geneUsed_local25_75, 2);
+
+geneNamesBySample = cell(1, numSamples);
+
+for i = 1:numSamples
+    numGenes = size(geneUsed_local25_75{1, i}, 2);
+    geneNamesList = {};
+    for j = 1:numGenes
+        currentElement = geneUsed_local25_75{1, i}{1, j};
+        
+        if iscell(currentElement) && numel(currentElement) == 1 && ischar(currentElement{1}) && ~isempty(strtrim(currentElement{1}))
+            geneNamesList{end+1} = strtrim(currentElement{1});
+        elseif ischar(currentElement) && ~isempty(strtrim(currentElement))
+            % Si el elemento es directamente un string
+            geneNamesList{end+1} = strtrim(currentElement);
+        end
+    end
+
+    % Eliminar nombres de genes duplicados y convertir la lista a un cell array de columnas
+    geneNamesBySample{i} = unique(geneNamesList', 'stable');
+end
+
+
+
+
+
 % USE TEH GENEUSED_LOCAL25_75
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
@@ -135,7 +161,6 @@ met_hkg = ens_hkg(index_names);
 
 % Use this function to find the housekeeping reactions names
 HKG_react = findRxnsFromGenes(model, met_hkg); % Gives a structure, so for loop to extract the names
-HKG_react = head(HKG_react)
 
 % Extract unique housekeeping reaction names
 fields = fieldnames(HKG_react);

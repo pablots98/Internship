@@ -12,6 +12,7 @@ function [adjusted_matrix, expression_scoreMatrix] = localT2_new(mappedDat, lowe
 % If not provided, it defaults to 25.
 % - upperThres (optional): The upper percentile threshold for adjustment. 
 % If not provided, it defaults to 75.
+
 % Outputs:
 % - adjusted_matrix: A binary matrix of the same size as mappedDat. Values 
 % are set to 1 if the original expression value is equal to or exceeds the 

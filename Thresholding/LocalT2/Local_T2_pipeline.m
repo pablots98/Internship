@@ -121,9 +121,47 @@ for i = 1:length(sampleNames)
     CoreReact_Sample{i} = model.rxns(activeReactions);  % Keep active reactions names for each sample
 end
 
-%%              Obtain the core genes from core reactions                %% THERE IS SOMETHING WRONG HERE, I HAVE MORE GENES THAT I WOULD BE EXPECTED
+%%              Obtain the core genes from core reactions                %% 
 
-% USE TEH GENEUSED_LOCAL25_75
+numSamples = size(geneUsed_local25_75, 2);
+
+geneNamesBySample = cell(1, numSamples);
+
+for i = 1:numSamples
+    numGenes = size(geneUsed_local25_75{1, i}, 2);
+    geneNamesList = {};
+    for j = 1:numGenes
+        currentElement = geneUsed_local25_75{1, i}{1, j};
+        
+        if iscell(currentElement) && numel(currentElement) == 1 && ischar(currentElement{1}) && ~isempty(strtrim(currentElement{1}))
+            geneNamesList{end+1} = strtrim(currentElement{1});
+        elseif ischar(currentElement) && ~isempty(strtrim(currentElement))
+            geneNamesList{end+1} = strtrim(currentElement);
+        end
+    end
+
+    geneNamesBySample{i} = unique(geneNamesList', 'stable');
+end
+
+%% Compare the core genes obtained with the previous core genes
+
+numSamples = length(geneNamesBySample);
+
+for i = 1:numSamples
+    genesSample = geneNamesBySample{i};
+    coreGenes = coreGenesStructure{i};
+
+    genesPresent = ismember(genesSample, coreGenes);
+
+    if all(genesPresent)
+        fprintf('All genes from sample %d are presente in coreGenesStructure.\n', i);
+    else
+        fprintf('Some genes from the sample %d are not present in coreGenesStructure.\n', i);
+        missingGenes = genesSample(~genesPresent);
+        disp(missingGenes);
+    end
+end
+
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%             core genes and reactions          %%%%%%%%%%%
@@ -147,8 +185,6 @@ for i = 1:length(fields)
         housekeep_react{end+1, 1} = firstcol;
     end
 end
-% Do this manually to check if it works, with 5 genes for example ¡¡ COMO
-% COÑO QUIERE QUE LO HAGA? !!
 
 % Just want the name one time
 housekeep_react_unique = unique(housekeep_react);
@@ -177,4 +213,3 @@ for i = 1:width(sampleNames)
     housekep_core_react_L(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
     housekep_core_react_L(i).percentage = (housekep_core_react_L(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
-
