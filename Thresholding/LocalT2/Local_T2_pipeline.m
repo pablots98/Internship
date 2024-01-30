@@ -170,7 +170,7 @@ index_names = ismember(ens_hkg, model_genes);
 met_hkg = ens_hkg(index_names);
 
 % Use this function to find the housekeeping reactions names
-HKG_react = findRxnsFromGenes(model, met_hkg); % Gives a structure, so for loop to extract the names
+HKG_react = findRxnsFromGenes(model, met_hkg); % Gives a structure, so the for loop to extract the names
 
 % Extract unique housekeeping reaction names
 fields = fieldnames(HKG_react);
