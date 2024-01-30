@@ -116,6 +116,7 @@ for i = 1:length(sampleNames)
     CoreReact_Sample{i} = model.rxns(activeReactions);  % Keep active reactions names for each sample
 end
 
+
 %%              Obtain the core genes from core reactions                %% 
 
 numSamples = size(geneUsed_local25_75, 2);
@@ -128,7 +129,7 @@ for i = 1:numSamples
     for j = 1:numGenes
         currentElement = geneUsed_local25_75{1, i}{1, j};
         
-        if iscell(currentElement) && numel(currentElement) == 1 && ischar(currentElement{1}) && ~isempty(strtrim(currentElement{1}))
+        if iscell(currentElement) && numel(currentElement) == 1 && ischar(currentElement{1}) && ~isempty(strtrim(currentElement{1})) % This part was done by chatGPT but seems to be right
             geneNamesList{end+1} = strtrim(currentElement{1});
         elseif ischar(currentElement) && ~isempty(strtrim(currentElement))
             geneNamesList{end+1} = strtrim(currentElement);
@@ -141,6 +142,7 @@ end
 %% Compare the core genes obtained with the previous core genes
 
 numSamples = length(geneNamesBySample);
+difGenesSCheck = cell(1, numSamples);
 
 for i = 1:numSamples
     genesSample = geneNamesBySample{i};
@@ -153,10 +155,11 @@ for i = 1:numSamples
     else
         fprintf('Some genes from the sample %d are not present in coreGenesStructure.\n', i);
         missingGenes = genesSample(~genesPresent);
-        disp(missingGenes);
+        difGenesSCheck{i} = missingGenes;
     end
 end
 
+% The results are horrible
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%             core genes and reactions          %%%%%%%%%%%
