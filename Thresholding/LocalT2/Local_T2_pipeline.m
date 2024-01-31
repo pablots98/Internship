@@ -159,7 +159,8 @@ for i = 1:numSamples
     end
 end
 
-% The results are horrible
+% The results are horrible / Maybe woks better establishing the core-genes,
+% and from them going to core-reactions.
 %%                                                                       %%
 %%%%%%%%%%%%%%%%% Compare housekeeping genes and reactions with %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%             core genes and reactions          %%%%%%%%%%%
