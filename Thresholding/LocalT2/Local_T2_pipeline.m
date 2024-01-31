@@ -15,12 +15,12 @@ model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
 
 %%          Ensure the model does not contain blocked reactions          %%
-% [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
-% model = fluxConsistModel; % load the new model with no blocked reactions
+[fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
+model = fluxConsistModel; % load the new model with no blocked reactions
 % save('model', 'model');
-model = load('model.mat');
-model = model.model;
-model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
+% model = load('model.mat');
+% model = model.model;
+% model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
 Ensembl_id = data(:, 1);
@@ -69,42 +69,42 @@ for i = 1:size(adjusted_matrix, 2)
     coreGenesStructure{i} = gene_names(activeGeneIndices); % Gene active names
 end
 
-% %                          Map to Expression                            %%  
+%%                          Map to Expression                            %%  
 % Create expressionData structure to use mapExpressionToReactions function
-% expressionData.gene = gene_names; 
-% expressionData.value = expression_scoreMatrix; 
-% 
-% %Initialize variables
-% Rxns_local25_75 = [];
-% geneUsed_local25_75 = {};
-% parsedGPR_local25_75 = {};
-% 
-% %Iterate over each sample
-% for i = 1:width(sampleNames)
-%     Extract the expression data for the current sample
-%     expressionDataSample = struct();
-%     expressionDataSample.gene = expressionData.gene;
-%     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
-% 
-%     Map expression data to reactions for the current sample
-%     [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
-%     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
-%     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
-%     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
-% end
-% 
-% %Save the results
-% save('Rxns_local25_75', "Rxns_local25_75");
-% save('geneUsed_local25_75', 'geneUsed_local25_75');
-% save('parsedGPR_local25_75', 'parsedGPR_local25_75');
+expressionData.gene = gene_names; 
+expressionData.value = expression_scoreMatrix; 
 
-% Load them
-Rxns_local25_75 = load('Rxns_local25_75.mat');
-Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
-geneUsed_local25_75 = load('geneUsed_local25_75.mat');
-geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
-parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
-parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+%Initialize variables
+Rxns_local25_75 = [];
+geneUsed_local25_75 = {};
+parsedGPR_local25_75 = {};
+
+%Iterate over each sample
+for i = 1:width(sampleNames)
+    % Extract the expression data for the current sample
+    expressionDataSample = struct();
+    expressionDataSample.gene = expressionData.gene;
+    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+
+    % Map expression data to reactions for the current sample
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+    Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
+    geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
+    parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
+end
+
+%Save the results
+save('Rxns_local25_75', "Rxns_local25_75");
+save('geneUsed_local25_75', 'geneUsed_local25_75');
+save('parsedGPR_local25_75', 'parsedGPR_local25_75');
+
+% % Load them
+% Rxns_local25_75 = load('Rxns_local25_75.mat');
+% Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
+% geneUsed_local25_75 = load('geneUsed_local25_75.mat');
+% geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
+% parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
+% parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
 
 %%                      Set the core reactions                           %%
 % Define variable
