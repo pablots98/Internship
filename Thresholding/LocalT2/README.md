@@ -5,7 +5,7 @@ Local T2 thresholding method relies on local criteria to determine whether a gen
 ## Components
 The folder includes different files.
 
-- **Data**: Merged_data, Mod_data and NM2ENSG.
+- **Data**: Merged_data (transcriptomics data) and NM2ENSG (Housekeeping genes).
 
 - **Metabolic models**: Human-GEM_Cobra_v1.01, SysBio_COBRA_v1.13 and SysBio_COBRA_v1.17_consensus.
 - **Functions**: localT2_new.
