@@ -51,33 +51,33 @@ metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', geneList, 'Varia
 % Delete the NaN values
 metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2)); % So we can use the local thresholding 
 
-%%      Global thresholding to determine core and non-core genes         %%
-results = table;
+% Take the metabolic ENSEMBL_IDs for later
+gene_names = metabolic_genes.Properties.RowNames;
 
-for i = 1:length(sampleNames)
+%%      Global thresholding to determine core and non-core genes         %%
+results_CoreGenes = table;
+numSamples = length(sampleNames);
+
+for i = 1:numSamples
     col_name = sampleNames{i};
-    expData = metabolic_genes(:, 1);
-    expData(:, 2) = metabolic_genes(:, col_name);
-    expData.Properties.VariableNames{1} = 'gene';
-    expData.Properties.VariableNames{2} = 'ExpressionValue';
-    expData.LogExpressionValue = log10(expData{:, 2} + 1);
+    expData = metabolic_genes(:, col_name);
+    expData.Properties.VariableNames{1} = 'ExpressionValue';
+    expData.LogExpressionValue = log10(expData.ExpressionValue + 1);
     expData.Value = expData.LogExpressionValue - min(expData.LogExpressionValue);
-    threshold = prctile(expData.Value, 75);
-    coreGenesIdx = expData.Value >= threshold;
+    coreGenesIdx = expData.Value >= prctile(expData.Value, 75); % Percentile 75
     coreGenes = expData(coreGenesIdx, :);
     coreGeneIDs = coreGenes.Properties.RowNames;
-    results{i, 'Sample'} = {col_name};
-    results{i, 'CoreGeneIDs'} = {coreGeneIDs};
+    results_CoreGenes{i, 'Sample'} = {col_name};
+    results_CoreGenes{i, 'CoreGeneIDs'} = {coreGeneIDs};
 end
 
-results_CoreGenes = results;
-results_CoreGenes(1, :) = [];
 disp(results_CoreGenes);
 
 %%          Map core genes to core reactions for each sample             %%
-numSamples = height(results_CoreGenes);
+
 expressionDataSamples = cell(numSamples, 1);
 
+% Create expressionDataSamples for mapExpressionToReactions function
 for i = 1:numSamples
     coreGenes = results_CoreGenes.CoreGeneIDs{i};
     [~, idx] = ismember(coreGenes, metabolic_genes.Properties.RowNames);
@@ -87,20 +87,20 @@ for i = 1:numSamples
     expressionDataSamples{i} = expressionData;
 end
 
+% Map the gene expression to reactions expressions over each sample 
 mappedReactions = cell(numSamples, 1);
 
 for i = 1:numSamples
     expressionData = expressionDataSamples{i};
-    [expressionRxns, ~, ~] = mapExpressionToReactions(model, expressionData);
+    [expressionRxns, parsedGPR_G, gene_used_G] = mapExpressionToReactions(model, expressionData);
     mappedReactions{i} = expressionRxns;
 end
 
-% Check for repeated reaction names
+% Check which reactions are present
 react_names = model.rxns;
-numSamp = numel(mappedReactions);
-reactionNamesPerSample = cell(numSamp, 1);
+reactionNamesPerSample = cell(numSamples, 1);
 
-for i = 1:numSamp
+for i = 1:numSamples
     currentReactions = mappedReactions{i};
     currentReactionNames = {};
     for j = 1:numel(currentReactions)
@@ -111,33 +111,18 @@ for i = 1:numSamp
     reactionNamesPerSample{i} = currentReactionNames;
 end
 
-% Check and display unique reaction names
-allNames = {};
-for i = 1:length(reactionNamesPerSample)
-    allNames = [allNames; reactionNamesPerSample{i}(:)];
-end
-
-uniqueNames = unique(allNames);
-if length(uniqueNames) < length(allNames)
-    disp('There are repeated names');
-else
-    disp('No repeated names');
-end
-
-%%                  Housekeeping genes analysis                          %% (CHECK, I THINK THIS IS WRONG)
-gene_names = metabolic_genes.Properties.RowNames;
+%%                  Housekeeping genes analysis                          %% 
 index_names = ismember(gene_names, h_k_g.converted_alias);
 hkg_met = metabolic_genes(index_names, :);
 hkg_met_ens = hkg_met.Properties.RowNames;
-%geneIDs = table2cell(hkg_met_ens);
-[results] = findRxnsFromGenes(model, hkg_met_ens);
+[results_HKReact] = findRxnsFromGenes(model, hkg_met_ens);
 
 % Extract unique housekeeping reaction names
-fields = fieldnames(results);
+fields = fieldnames(results_HKReact);
 housekeep_react = {};
 for i = 1:length(fields)
     field = fields{i};
-    cellArray = results.(field);
+    cellArray = results_HKReact.(field);
     for j = 1:size(cellArray, 1)
         firstcol = cellArray{j, 1};
         housekeep_react{end+1, 1} = firstcol;
@@ -147,11 +132,10 @@ housekeep_react_unique = unique(housekeep_react);
 disp(housekeep_react_unique);
 
 %% Compare the number of housekeeping core genes
-numSample_genes = numel(results_CoreGenes.CoreGeneIDs);
 housekep_core_gene_G = struct("numHousekeepingCoreGenes", [], 'housekeepingCoreGenes', [], 'percentage', []);
 totalHousekeepingGenes = numel(hkg_met_ens);
 
-for i = 1:numSample_genes
+for i = 1:numSamples
     coreGenes = results_CoreGenes.CoreGeneIDs{i};
     housekeepingGeneNames = hkg_met_ens;
     housekeepingInCore_g = ismember(housekeepingGeneNames, coreGenes);
@@ -161,11 +145,10 @@ for i = 1:numSample_genes
 end
 
 %% Compare the number of housekeeping core reactions
-numSample = numel(reactionNamesPerSample);
 housekep_core_react_G = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
 
-for i = 1:numSample
+for i = 1:numSamples
     coreReactions = reactionNamesPerSample{i};
     housekeepingInCore = ismember(housekeep_react_unique, coreReactions);
     housekep_core_react_G(i).numHousekeepingCoreReactions = sum(housekeepingInCore);

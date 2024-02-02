@@ -15,11 +15,11 @@ model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
 
 %%          Ensure the model does not contain blocked reactions          %%
-[fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
-model = fluxConsistModel; % load the new model with no blocked reactions
+% [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
+% model = fluxConsistModel; % load the new model with no blocked reactions
 % save('model', 'model');
-% model = load('model.mat');
-% model = model.model;
+model = load('model.mat');
+model = model.model;
 % model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
@@ -38,7 +38,6 @@ log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (
 allGenes = {};
 geneExpressionMatrix = [];
 
-
 for i = 1: width(sampleNames)
     log_data.value = log_data{:, i + 1}; %- min(log_data{:, i + 1}); % shift minimum to 0 ¡¡ ASK MARIAN HOW HE WANT TO NORMALIZE IT!! ACTUALLY IT SAYS FPKM, SO I ALREADY HAVE IT
     [geneList, geneExpression] = findUsedGenesLevels(model, log_data); % Athough is just for the last sample, the genes present in the models are always the same
@@ -50,6 +49,7 @@ metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', geneList, 'Varia
 
 % Delete the NaN values
 metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2)); % So we can use the local thresholding 
+model_genes = metabolic_genes.Properties.RowNames;
 %%                          Local thresholding                           %%
 % Set the upper and lower threshold
 up_percentage = 75;
@@ -70,41 +70,42 @@ for i = 1:size(adjusted_matrix, 2)
 end
 
 %%                          Map to Expression                            %%  
-% Create expressionData structure to use mapExpressionToReactions function
-expressionData.gene = gene_names; 
-expressionData.value = expression_scoreMatrix; 
+% % Create expressionData structure to use mapExpressionToReactions function
+% expressionData.gene = gene_names; 
+% expressionData.value = expression_scoreMatrix; 
+% 
+% %Initialize variables
+% Rxns_local25_75 = [];
+% geneUsed_local25_75 = {};
+% parsedGPR_local25_75 = {};
+% 
+% %Iterate over each sample
+% for i = 1:width(sampleNames)
+%     % Extract the expression data for the current sample
+%     expressionDataSample = struct();
+%     expressionDataSample.gene = expressionData.gene;
+%     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+% 
+%     % Map expression data to reactions for the current sample
+%     [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+%     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
+%     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
+%     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
+% end
+% 
+% %Save the results
+% save('Rxns_local25_75', "Rxns_local25_75");
+% save('geneUsed_local25_75', 'geneUsed_local25_75');
+% save('parsedGPR_local25_75', 'parsedGPR_local25_75');
 
-%Initialize variables
-Rxns_local25_75 = [];
-geneUsed_local25_75 = {};
-parsedGPR_local25_75 = {};
-
-%Iterate over each sample
-for i = 1:width(sampleNames)
-    % Extract the expression data for the current sample
-    expressionDataSample = struct();
-    expressionDataSample.gene = expressionData.gene;
-    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
-
-    % Map expression data to reactions for the current sample
-    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
-    Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
-    geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
-    parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
-end
-
-%Save the results
-save('Rxns_local25_75', "Rxns_local25_75");
-save('geneUsed_local25_75', 'geneUsed_local25_75');
-save('parsedGPR_local25_75', 'parsedGPR_local25_75');
-
-% % Load them
-% Rxns_local25_75 = load('Rxns_local25_75.mat');
-% Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
-% geneUsed_local25_75 = load('geneUsed_local25_75.mat');
-% geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
-% parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
-% parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+% Load them
+Rxns_local25_75 = load('Rxns_local25_75.mat');
+Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
+geneUsed_local25_75 = load('geneUsed_local25_75.mat');
+geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
+parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
+parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+% Check there are not repeated reactions
 
 %%                      Set the core reactions                           %%
 % Define variable
