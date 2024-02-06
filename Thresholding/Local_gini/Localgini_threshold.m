@@ -75,7 +75,7 @@ geneExpression.genes = genes;
 
 %%                          Repo pipeline                                %%                           
 % Choice of model extraction method (has to be anyone of ['FASTCORE','iMAT','MBA','GIMME','INIT','mCADRE'])
-MeM = 'mCADRE';
+MeM = 'FASTCORE';
 
 % The context or samples that you are interested, in this case, all of them
 contexts = context;
@@ -100,7 +100,7 @@ tol = 1e-4;
 filename = 'C:\\Users\\PC\\OneDrive\\Documentos\\Systems_Biology_master\\Internship\\Internship\\Thresholding\\Local_gini\\';
 
 %Building context-specific models
-[Models,RxnImp] = buildContextmodels(geneExpression,model,MeM,contexts,ut,lt,ThS,coreRxn,filename,tol)
+[Models,RxnImp] = buildContextmodels(geneExpression,model,MeM,contexts,ut,lt,ThS,coreRxn,filename,tol);
 save('Models.mat', 'Models');
 save('RxnImp.mat', 'RxnImp');
 RxI_check = load('RxnImp.mat');
