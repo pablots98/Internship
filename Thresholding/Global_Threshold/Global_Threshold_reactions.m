@@ -167,7 +167,7 @@ HK_R_acc_G_col = HK_R_acc_G(:);
 T_React = table(HK_R_acc_G_col, 'VariableNames', {'HK_R_acc_G'});
 writetable(T_React, "HK_R_acc_G.xlsx", 'WriteRowNames', false);
 
-%% Chec the samples with the same accuracy with genes
+%% Check the samples with the same accuracy with genes
 % find the indexes of the same values
  equalIndex = {};
 
@@ -179,6 +179,24 @@ writetable(T_React, "HK_R_acc_G.xlsx", 'WriteRowNames', false);
      end
  end
 
- % Check the HK core genes names 
- 
+% Check the HK core genes names 
+genesArray = housekep_core_gene_G.housekeepingCoreGenes;
+
+for i = 1:length(equalIndex)
+    indicesGrupo = equalIndex{i};
+    genesGrupo = genesArray{indicesGrupo(1)};
+
+    sonIguales = true;
+
+    for j = 2:length(indicesGrupo)
+        genesComparar = genesArray{indicesGrupo(j)};
+
+        if length(genesGrupo) ~= length(genesComparar) || ~all(strcmp(genesGrupo, genesComparar))
+            sonIguales = false;
+            break;
+        end
+    end
+
+    resultadosComparacion{i} = sonIguales;
+end
 
