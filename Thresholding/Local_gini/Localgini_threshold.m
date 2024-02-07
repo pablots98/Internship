@@ -100,9 +100,9 @@ tol = 1e-4;
 filename = 'C:\\Users\\PC\\OneDrive\\Documentos\\Systems_Biology_master\\Internship\\Internship\\Thresholding\\Local_gini\\';
 
 %Building context-specific models
-[Models,RxnImp] = buildContextmodels(geneExpression,model,MeM,contexts,ut,lt,ThS,coreRxn,filename,tol);
-save('Models.mat', 'Models');
-save('RxnImp.mat', 'RxnImp');
+% [Models,RxnImp] = buildContextmodels(geneExpression,model,MeM,contexts,ut,lt,ThS,coreRxn,filename,tol);
+% save('Models.mat', 'Models');
+% save('RxnImp.mat', 'RxnImp');
 RxI_check = load('RxnImp.mat');
 RxnImp = RxI_check.RxnImp;
 Model_check = load('Models.mat');

@@ -9,7 +9,8 @@ changeCobraSolver('gurobi', 'all');
 
 %%                              Load data                                %%
 % Load transcriptomics data, housekeeping genes, and metabolic model
-data = readtable('Merged_data.xlsx'); % Transcriptomics data
+%data = readtable('Merged_data.xlsx'); % Transcriptomics data
+data = readtable("data_TPM.xlsx")
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
@@ -24,8 +25,8 @@ model = model.model;
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
 Ensembl_id = data(:, 1);
-sampleNames = data.Properties.VariableNames(7:end); 
-data_to_log = table2array(data(:, 7:end));
+sampleNames = data.Properties.VariableNames(2:end); 
+data_to_log = table2array(data(:, 2:end));
 logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0 values) 
 
 %Create the new table with the data obtained before
@@ -70,33 +71,33 @@ for i = 1:size(adjusted_matrix, 2)
 end
 
 %%                          Map to Expression                            %%  
-% % Create expressionData structure to use mapExpressionToReactions function
-% expressionData.gene = gene_names; 
-% expressionData.value = expression_scoreMatrix; 
-% 
-% %Initialize variables
-% Rxns_local25_75 = [];
-% geneUsed_local25_75 = {};
-% parsedGPR_local25_75 = {};
-% 
-% %Iterate over each sample
-% for i = 1:width(sampleNames)
-%     % Extract the expression data for the current sample
-%     expressionDataSample = struct();
-%     expressionDataSample.gene = expressionData.gene;
-%     expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
-% 
-%     % Map expression data to reactions for the current sample
-%     [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
-%     Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
-%     geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
-%     parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
-% end
-% 
-% %Save the results
-% save('Rxns_local25_75', "Rxns_local25_75");
-% save('geneUsed_local25_75', 'geneUsed_local25_75');
-% save('parsedGPR_local25_75', 'parsedGPR_local25_75');
+% Create expressionData structure to use mapExpressionToReactions function
+expressionData.gene = gene_names; 
+expressionData.value = expression_scoreMatrix; 
+
+%Initialize variables
+Rxns_local25_75 = [];
+geneUsed_local25_75 = {};
+parsedGPR_local25_75 = {};
+
+%Iterate over each sample
+for i = 1:width(sampleNames)
+    % Extract the expression data for the current sample
+    expressionDataSample = struct();
+    expressionDataSample.gene = expressionData.gene;
+    expressionDataSample.value = expressionData.value(:, i); % Selecting the column for the current sample
+
+    % Map expression data to reactions for the current sample
+    [expressionRxns, parsedGPR, gene_used] = mapExpressionToReactions(model, expressionDataSample, 'false');
+    Rxns_local25_75 = [Rxns_local25_75, expressionRxns]; % Store the mapped reactions
+    geneUsed_local25_75{i} = gene_used; % Store the genes used in the mapping
+    parsedGPR_local25_75{i} = parsedGPR; % Store the genes used in the mapping GO THROUGH IT!!!!!
+end
+
+%Save the results
+save('Rxns_local25_75', "Rxns_local25_75");
+save('geneUsed_local25_75', 'geneUsed_local25_75');
+save('parsedGPR_local25_75', 'parsedGPR_local25_75');
 
 % Load them
 Rxns_local25_75 = load('Rxns_local25_75.mat');

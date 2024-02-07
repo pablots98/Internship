@@ -9,7 +9,8 @@ changeCobraSolver('gurobi', 'all');
 
 %%                              Load data                                %%
 % Load transcriptomics data, housekeeping genes, and metabolic model
-data = readtable('Merged_data.xlsx'); % Transcriptomics data
+%data = readtable('Merged_data.xlsx'); % Transcriptomics data
+data = readtable('data_TPM.xlsx');
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
@@ -24,8 +25,8 @@ model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
 Ensembl_id = data(:, 1);
-sampleNames = data.Properties.VariableNames(7:end); 
-data_to_log = table2array(data(:, 7:end));
+sampleNames = data.Properties.VariableNames(2:end); 
+data_to_log = table2array(data(:, 2:end));
 logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0 values) 
 
 %Create the new table with the data obtained before
