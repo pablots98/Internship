@@ -10,7 +10,7 @@ changeCobraSolver('gurobi', 'all');
 %%                              Load data                                %%
 % Load transcriptomics data, housekeeping genes, and metabolic model
 %data = readtable('Merged_data.xlsx'); % Transcriptomics data
-data = readtable("data_TPM.xlsx")
+data = readtable("data_TPM.xlsx");
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
@@ -33,6 +33,9 @@ logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0
 log_data = [Ensembl_id, array2table(logged_data)]; % Load the data on the new table  
 log_data.Properties.VariableNames(2:end) = sampleNames; % Variables names 
 log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (To run findUsedGenesLevels)
+%% 
+sampleNames = sampleNames(:)
+writecell(sampleNames, "sampleNames.csv")
 
 %%              Processing the gene expression dataset                   %% 
 % Define new cells and new Matrixes
