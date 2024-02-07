@@ -9,7 +9,8 @@ changeCobraSolver('gurobi', 'all');
 
 %%                              Load data                                %%
 % Load transcriptomics data, housekeeping genes, and metabolic model
-data = readtable('Merged_data.xlsx'); % Transcriptomics data
+%data = readtable('Merged_data.xlsx'); % Transcriptomics data
+data = readtable("data_TPM.xlsx")
 h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
@@ -20,12 +21,12 @@ model = model.model;
 % save('model', 'model');
 model = load('model.mat');
 model = model.model;
-model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
+% model_genes = model.genes; % ENSEMBL_IDs of the genes in the model
 %%                              Preprocessing                            %%
 % Colect the data needed to create the table
 Ensembl_id = data(:, 1);
-sampleNames = data.Properties.VariableNames(7:end); 
-data_to_log = table2array(data(:, 7:end));
+sampleNames = data.Properties.VariableNames(2:end); 
+data_to_log = table2array(data(:, 2:end));
 logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0 values) 
 
 %Create the new table with the data obtained before
@@ -38,7 +39,6 @@ log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (
 allGenes = {};
 geneExpressionMatrix = [];
 
-
 for i = 1: width(sampleNames)
     log_data.value = log_data{:, i + 1}; %- min(log_data{:, i + 1}); % shift minimum to 0 ¡¡ ASK MARIAN HOW HE WANT TO NORMALIZE IT!! ACTUALLY IT SAYS FPKM, SO I ALREADY HAVE IT
     [geneList, geneExpression] = findUsedGenesLevels(model, log_data); % Athough is just for the last sample, the genes present in the models are always the same
@@ -50,6 +50,7 @@ metabolic_genes = array2table(geneExpressionMatrix, 'RowNames', geneList, 'Varia
 
 % Delete the NaN values
 metabolic_genes = rmmissing(metabolic_genes, 'MinNumMissing', size(metabolic_genes, 2)); % So we can use the local thresholding 
+model_genes = metabolic_genes.Properties.RowNames;
 %%                          Local thresholding                           %%
 % Set the upper and lower threshold
 up_percentage = 75;
@@ -98,13 +99,14 @@ save('Rxns_local25_75', "Rxns_local25_75");
 save('geneUsed_local25_75', 'geneUsed_local25_75');
 save('parsedGPR_local25_75', 'parsedGPR_local25_75');
 
-% % Load them
-% Rxns_local25_75 = load('Rxns_local25_75.mat');
-% Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
-% geneUsed_local25_75 = load('geneUsed_local25_75.mat');
-% geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
-% parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
-% parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+% Load them
+Rxns_local25_75 = load('Rxns_local25_75.mat');
+Rxns_local25_75 = Rxns_local25_75.Rxns_local25_75;
+geneUsed_local25_75 = load('geneUsed_local25_75.mat');
+geneUsed_local25_75 = geneUsed_local25_75.geneUsed_local25_75;
+parsedGPR_local25_75 = load('parsedGPR_local25_75.mat');
+parsedGPR_local25_75 = parsedGPR_local25_75.parsedGPR_local25_75;
+% Check there are not repeated reactions
 
 %%                      Set the core reactions                           %%
 % Define variable
@@ -201,6 +203,15 @@ for i = 1:width(sampleNames)
     housekep_core_gene_L(i).percentage = (housekep_core_gene_L(i).numHousekeepingCoreGenes / totalHousekeepingGenes) * 100;
 end
 
+HK_G_acc_LT = [housekep_core_gene_L.percentage];
+% Crear la tabla con el nombre de columna deseado
+T_Genes = table(HK_G_acc_LT, 'VariableNames', {'HK_G_acc_LT'});
+
+% Guardar la tabla en un archivo Excel
+writetable(T_Genes, "HK_G_acc_LT.xlsx", 'WriteRowNames', false);
+
+writetable(T_Genes, "HK_G_acc_LT.xlsx");
+
 %%          Compare the number of housekeeping core reactions            %%
 housekep_core_react_L = struct('numHousekeepingCoreReactions', [], 'housekeepingCoreReactions', [], 'percentage', []);
 totalHousekeepingReactions = numel(housekeep_react_unique);
@@ -212,3 +223,6 @@ for i = 1:width(sampleNames)
     housekep_core_react_L(i).housekeepingCoreReactions = housekeep_react_unique(housekeepingInCore);
     housekep_core_react_L(i).percentage = (housekep_core_react_L(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
+
+HK_R_acc_LT = housekep_core_react_L.percentage;
+save("HK_R_acc_LT.xlsx", "HK_R_acc_LT");

@@ -154,8 +154,12 @@ for i = 1:num_models
         results(i) = NaN;
     end
 end
-
 HK_G_accuracy = array2table(results, 'VariableNames', {'PercentageCoincidences'});
+
+HK_G_acc_LG = [HK_G_accuracy.PercentageCoincidences];
+HK_G_acc_LG_col = HK_G_acc_LG(:);
+T_Gene = table(HK_G_acc_LG_col, 'VariableNames', {'HK_G_acc_LG'});
+writetable(T_Gene, "HK_G_acc_LG.xlsx", 'WriteRowNames', false);
 
 %%              Check the housekeeping core reactions                    %%
 
@@ -176,5 +180,9 @@ for i = 1:num_models
         results(i) = NaN;
     end
 end
-
 HK_R_accuracy = array2table(results, 'VariableNames', {'PercentageCoincidencesReactions'});
+
+HK_R_acc_LG = [HK_R_accuracy.PercentageCoincidencesReactions];
+HK_R_acc_LG_col = HK_R_acc_LG(:);
+T_React = table(HK_R_acc_LG_col, 'VariableNames', {'HK_R_acc_LG'});
+writetable(T_React, "HK_R_acc_LG.xlsx", 'WriteRowNames', false);

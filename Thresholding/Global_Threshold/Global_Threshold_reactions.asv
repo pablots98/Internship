@@ -146,8 +146,8 @@ for i = 1:numSamples
 end
 
 HK_G_acc_G = [housekep_core_gene_G.percentage];
-HK_G_acc_G_col = HK_G_acc_G(:);
-T_Genes = table(HK_G_acc_G_col, 'VariableNames', {'HK_G_acc_G'});
+HK_G_acc_LT_col = HK_G_acc_G(:);
+T_Genes = table(HK_G_acc_LT_col, 'VariableNames', {'HK_G_acc_LT'});
 writetable(T_Genes, "HK_G_acc_G.xlsx", 'WriteRowNames', false);
 
 %% Compare the number of housekeeping core reactions
@@ -162,7 +162,7 @@ for i = 1:numSamples
     housekep_core_react_G(i).percentage = (housekep_core_react_G(i).numHousekeepingCoreReactions / totalHousekeepingReactions) * 100;
 end
 
-HK_R_acc_G = [housekep_core_react_G.percentage];
-HK_R_acc_G_col = HK_R_acc_G(:);
-T_React = table(HK_R_acc_G_col, 'VariableNames', {'HK_R_acc_G'});
-writetable(T_React, "HK_R_acc_G.xlsx", 'WriteRowNames', false);
+HK_R_acc_G = [housekep_core_react_L.percentage];
+HK_R_acc__col = HK_R_acc_G(:);
+T_React = table(HK_R_acc_LT_col, 'VariableNames', {'HK_R_acc_LT'});
+writetable(T_React, "HK_R_acc_LT.xlsx", 'WriteRowNames', false);
