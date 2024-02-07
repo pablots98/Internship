@@ -168,17 +168,6 @@ T_React = table(HK_R_acc_G_col, 'VariableNames', {'HK_R_acc_G'});
 writetable(T_React, "HK_R_acc_G.xlsx", 'WriteRowNames', false);
 
 %% Chec the samples with the same accuracy with genes
-% find the indexes of the same values
- equalIndex = {};
 
- for i = height(HK_G_acc_G_col)
-     index = find(HK_G_acc_G_col == HK_G_acc_G_col(i));
-
-     if length(index) > 1 && ~any(cellfun(@(x) isequal(x, index), equalIndex))
-         equalIndex{end+1} = index
-     end
- end
-
- % Check the HK core genes names 
- 
-
+% Check the same values
+perc_gen_ = [housekep_core_react_G.percentage]
