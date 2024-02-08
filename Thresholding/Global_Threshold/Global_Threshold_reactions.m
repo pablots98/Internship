@@ -200,3 +200,35 @@ for i = 1:length(equalIndex)
     resultadosComparacion{i} = sonIguales;
 end
 
+%% Check the samples with the same accuracy with reactions
+% find the indexes of the same values
+ equalIndex = {};
+
+ for i = height(HK_R_acc_G_col)
+     index = find(HK_R_acc_G_col == HK_R_acc_G_col(i));
+
+     if length(index) > 1 && ~any(cellfun(@(x) isequal(x, index), equalIndex))
+         equalIndex{end+1} = index
+     end
+ end
+
+% Check the HK core genes names 
+genesArray = housekep_core_react_G.housekeepingCoreReactions;
+
+for i = 1:length(equalIndex)
+    indicesGrupo = equalIndex{i};
+    genesGrupo = genesArray{indicesGrupo(1)};
+
+    sonIguales = true;
+
+    for j = 2:length(indicesGrupo)
+        genesComparar = genesArray{indicesGrupo(j)};
+
+        if length(genesGrupo) ~= length(genesComparar) || ~all(strcmp(genesGrupo, genesComparar))
+            sonIguales = false;
+            break;
+        end
+    end
+
+    resultadosComparacion{i} = sonIguales;
+end

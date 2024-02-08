@@ -33,9 +33,6 @@ logged_data = log10(data_to_log + 1); % Normalize the data (+1 to avoid having 0
 log_data = [Ensembl_id, array2table(logged_data)]; % Load the data on the new table  
 log_data.Properties.VariableNames(2:end) = sampleNames; % Variables names 
 log_data.Properties.VariableNames{1} = 'gene'; % Change ENSEML_ID name to gene (To run findUsedGenesLevels)
-%% 
-sampleNames = sampleNames(:)
-writecell(sampleNames, "sampleNames.csv")
 
 %%              Processing the gene expression dataset                   %% 
 % Define new cells and new Matrixes
@@ -227,3 +224,69 @@ HK_R_acc_LT = [housekep_core_react_L.percentage];
 HK_R_acc_LT_col = HK_R_acc_LT(:);
 T_React = table(HK_R_acc_LT_col, 'VariableNames', {'HK_R_acc_LT'});
 writetable(T_React, "HK_R_acc_LT.xlsx", 'WriteRowNames', false);
+
+%% Check the samples with the same accuracy with genes
+% find the indexes of the same values
+ equalIndex = {};
+
+ for i = height(HK_G_acc_LT_col)
+     index = find(HK_G_acc_LT_col == HK_G_acc_LT_col(i));
+
+     if length(index) > 1 && ~any(cellfun(@(x) isequal(x, index), equalIndex))
+         equalIndex{end+1} = index
+     end
+ end
+
+% Check the HK core genes names 
+genesArray = housekep_core_gene_L.housekeepingCoreGenes;
+
+for i = 1:length(equalIndex)
+    indicesGrupo = equalIndex{i};
+    genesGrupo = genesArray{indicesGrupo(1)};
+
+    sonIguales = true;
+
+    for j = 2:length(indicesGrupo)
+        genesComparar = genesArray{indicesGrupo(j)};
+
+        if length(genesGrupo) ~= length(genesComparar) || ~all(strcmp(genesGrupo, genesComparar))
+            sonIguales = false;
+            break;
+        end
+    end
+
+    resultadosComparacion{i} = sonIguales;
+end
+
+%% Check the samples with the same accuracy with reactions
+% find the indexes of the same values
+ equalIndex = {};
+
+ for i = height(HK_R_acc_LT_col)
+     index = find(HK_R_acc_LT_col == HK_R_acc_LT_col(i));
+
+     if length(index) > 1 && ~any(cellfun(@(x) isequal(x, index), equalIndex))
+         equalIndex{end+1} = index
+     end
+ end
+
+% Check the HK core genes names 
+genesArray = housekep_core_react_L.housekeepingCoreReactions;
+
+for i = 1:length(equalIndex)
+    indicesGrupo = equalIndex{i};
+    genesGrupo = genesArray{indicesGrupo(1)};
+
+    sonIguales = true;
+
+    for j = 2:length(indicesGrupo)
+        genesComparar = genesArray{indicesGrupo(j)};
+
+        if length(genesGrupo) ~= length(genesComparar) || ~all(strcmp(genesGrupo, genesComparar))
+            sonIguales = false;
+            break;
+        end
+    end
+
+    resultadosComparacion{i} = sonIguales;
+end
