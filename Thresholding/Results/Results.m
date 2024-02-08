@@ -18,7 +18,7 @@ HK_G_acc_LG = readtable("HK_G_acc_LG.xlsx");
 HK_R_acc_LG = readtable("HK_R_acc_LG.xlsx");
 
 % StanDep results
-MatchComparisonResults = readtable("MatchComparisonResults.xlsx");
+HK_R_acc_SD = readtable("HK_R_acc_SD.xlsx");
 
 %%                         Create the table                              %%
 numRows = height(sampleNames);
@@ -63,8 +63,8 @@ results_table.("Var7") = HK_R_acc_LG.(columnName);
 results_table.Properties.VariableNames{7} = columnName;
 
 % HK Reactions for StanDep Thresholding
-columnName = MatchComparisonResults.Properties.VariableNames{1};
-results_table.("Var8") = MatchComparisonResults.(columnName);
+columnName = HK_R_acc_SD.Properties.VariableNames{1};
+results_table.("Var8") = HK_R_acc_SD.(columnName);
 results_table.Properties.VariableNames{8} = columnName;
 
 %%                       SAVE THE RESULTS TABLE                          %%
