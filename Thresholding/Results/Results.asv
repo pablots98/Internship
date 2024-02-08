@@ -39,10 +39,10 @@ results_table.Properties.VariableNames{7} = HK_R_acc_LG.Properties.VariableNames
 results_table.(8) = HK_R_acc_SD.(1);
 results_table.Properties.VariableNames{8} = HK_R_acc_SD.Properties.VariableNames{1};
 
-%%                      transpose the matrix                             %%
+%%                      transpose the matrix
 transposed_table = array2table(table2array(results_table)');
 transposed_table.Properties.RowNames = results_table.Properties.VariableNames;
 transposed_table.Properties.VariableNames = results_table.Properties.RowNames;
 
-%%                          Save the table                               %%
+% Guardar la tabla transpuesta
 writetable(transposed_table, 'transposed_results_table.xlsx', 'WriteRowNames',true, 'WriteVariableNames',true);
