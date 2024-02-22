@@ -114,7 +114,7 @@ for i = 1:numSamples
 end
 
 %%                  Housekeeping genes analysis                          %% 
-index_names = ismember(gene_names, h_k_g); % h_k_g.converted_alias);
+index_names = ismember(gene_names, h_k_g.ENSEMBL_ID); % h_k_g.converted_alias);
 hkg_met = metabolic_genes(index_names, :);
 hkg_met_ens = hkg_met.Properties.RowNames;
 [results_HKReact] = findRxnsFromGenes(model, hkg_met_ens);
