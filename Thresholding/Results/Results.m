@@ -100,7 +100,7 @@ results_table.Properties.VariableNames{3} = columnName;
 % HK genes for StanDep thresholding
 columnName = HK_G_acc_SD.Properties.VariableNames{1};
 results_table.("Var4") = HK_G_acc_SD.(columnName);
-results_table.Properties.VariableNames{8} = columnName;
+results_table.Properties.VariableNames{4} = columnName;
 
 % HK Reactions for Global Thresholding
 columnName = HK_R_acc_G.Properties.VariableNames{1};

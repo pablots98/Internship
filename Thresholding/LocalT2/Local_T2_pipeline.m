@@ -11,7 +11,8 @@ changeCobraSolver('gurobi', 'all');
 % Load transcriptomics data, housekeeping genes, and metabolic model
 %data = readtable('Merged_data.xlsx'); % Transcriptomics data
 data = readtable("data_TPM.xlsx");
-h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
+h_k_g = readtable('NM2ENSG.xlsx'); 
+% h_k_g = readtable('ENS_ID_HKG.xlsx');    % Housekeeping genes with Ensembl IDs
 model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
 model = model.model;
 

@@ -11,6 +11,7 @@ changeCobraSolver('gurobi', 'all')
 data = readtable('Merged_data.xlsx');
 % Housekeeping genes with the ensembl ids
 h_k_g = readtable('NM2ENSG.xlsx');
+%h_k_g = readtable('ENS_ID_HKG.xlsx');
 % Human1 metabolic model.
 model = load('Human-GEM_Cobra_v1.01.mat')
 %model = load('SysBio_COBRA_v1.13.mat');
