@@ -13,9 +13,11 @@ data = readtable('Merged_data.xlsx');
 %h_k_g = readtable('NM2ENSG.xlsx');
 h_k_g = readtable('ENS_ID_HKG.xlsx');
 % Human1 metabolic model.
-model = load('Human-GEM_Cobra_v1.01.mat')
+% model = load('Human-GEM_Cobra_v1.01.mat')
 %model = load('SysBio_COBRA_v1.13.mat');
-model = model.model
+model = load('SysBio_COBRA_v1.17_consensus.mat'); % Human1 metabolic model
+model = model.myModel;
+%model = model.model
 
 %%         Ensure the model does not contain blocked reactions           %%
 % [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
