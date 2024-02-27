@@ -123,4 +123,4 @@ results_table.("Var8") = HK_R_acc_SD.(columnName);
 results_table.Properties.VariableNames{8} = columnName;
 
 %%                       SAVE THE RESULTS TABLE                          %%
-writetable(results_table, 'results_table.xlsx', 'WriteRowNames',true, 'WriteVariableNames',true);                       
+writetable(results_table, 'results_table_NHKG.xlsx', 'WriteRowNames',true, 'WriteVariableNames',true);                       

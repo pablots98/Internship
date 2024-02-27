@@ -10,8 +10,8 @@ changeCobraSolver('gurobi', 'all')
 % Transcriptomics data
 data = readtable('Merged_data.xlsx');
 % Housekeeping genes with the ensembl ids
-h_k_g = readtable('NM2ENSG.xlsx');
-%h_k_g = readtable('ENS_ID_HKG.xlsx');
+%h_k_g = readtable('NM2ENSG.xlsx');
+h_k_g = readtable('ENS_ID_HKG.xlsx');
 % Human1 metabolic model.
 model = load('Human-GEM_Cobra_v1.01.mat')
 %model = load('SysBio_COBRA_v1.13.mat');
@@ -110,7 +110,7 @@ Model_check = load('Models.mat');
 Models = Model_check.Models;
 
 %%                          Housekeeping genes                           %%
-ens_hkg = h_k_g.converted_alias; 
+ens_hkg = h_k_g.ENSEMBL_ID; 
 index_names = ismember(ens_hkg, genes);
 met_hkg = ens_hkg(index_names);
 

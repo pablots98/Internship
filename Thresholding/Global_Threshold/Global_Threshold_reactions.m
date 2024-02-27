@@ -11,10 +11,11 @@ changeCobraSolver('gurobi', 'all');
 % Load transcriptomics data, housekeeping genes, and metabolic model
 %data = readtable('Merged_data.xlsx'); % Transcriptomics data
 data = readtable('data_TPM.xlsx');
-h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
-%h_k_g = readtable('ENS_ID_HKG.xlsx')
-model = load('Human-GEM_Cobra_v1.01.mat'); % Human1 metabolic model
-model = model.model;
+% h_k_g = readtable('NM2ENSG.xlsx');    % Housekeeping genes with Ensembl IDs
+h_k_g = readtable('ENS_ID_HKG.xlsx');
+% model = load('Human-GEM_Cobra_v1.01.mat')
+model = load('SysBio_COBRA_v1.17_consensus.mat'); % Human1 metabolic model
+model = model.myModel;
 
 %%          Ensure the model does not contain blocked reactions          %%
 % [fluxConsistentMetBool, fluxConsistentRxnBool, fluxInConsistentMetBool, fluxInConsistentRxnBool, ~, fluxConsistModel] = findFluxConsistentSubset(model);
@@ -114,7 +115,7 @@ for i = 1:numSamples
 end
 
 %%                  Housekeeping genes analysis                          %% 
-index_names = ismember(gene_names, h_k_g.converted_alias);
+index_names = ismember(gene_names, h_k_g.ENSEMBL_ID);
 hkg_met = metabolic_genes(index_names, :);
 hkg_met_ens = hkg_met.Properties.RowNames;
 [results_HKReact] = findRxnsFromGenes(model, hkg_met_ens);
