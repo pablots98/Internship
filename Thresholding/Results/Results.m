@@ -25,8 +25,8 @@ results_table.Properties.VariableNames{1} = HK_G_acc_G.Properties.VariableNames{
 results_table.(2) = HK_G_acc_LT.(1);
 results_table.Properties.VariableNames{2} = HK_G_acc_LT.Properties.VariableNames{1};
 
-results_table.(3) = HK_G_acc_LG.(1);
-results_table.Properties.VariableNames{3} = HK_G_acc_LG.Properties.VariableNames{1};
+% results_table.(3) = HK_G_acc_LG.(1);
+% results_table.Properties.VariableNames{3} = HK_G_acc_LG.Properties.VariableNames{1};
 
 results_table.(5) = HK_G_acc_SD.(1);
 results_table.Properties.VariableNames{4} = HK_G_acc_SD.Properties.VariableNames{1};
@@ -37,8 +37,8 @@ results_table.Properties.VariableNames{5} = HK_R_acc_G.Properties.VariableNames{
 results_table.(6) = HK_R_acc_LT.(1);
 results_table.Properties.VariableNames{6} = HK_R_acc_LT.Properties.VariableNames{1};
 
-results_table.(7) = HK_R_acc_LG.(1);
-results_table.Properties.VariableNames{7} = HK_R_acc_LG.Properties.VariableNames{1};
+% results_table.(7) = HK_R_acc_LG.(1);
+% results_table.Properties.VariableNames{7} = HK_R_acc_LG.Properties.VariableNames{1};
 
 results_table.(8) = HK_R_acc_SD.(1);
 results_table.Properties.VariableNames{8} = HK_R_acc_SD.Properties.VariableNames{1};
@@ -65,9 +65,9 @@ HK_R_acc_G = readtable("HK_R_acc_G.xlsx");
 HK_G_acc_LT = readtable("HK_G_acc_LT.xlsx");
 HK_R_acc_LT = readtable("HK_R_acc_LT.xlsx");
 
-% LocalGini results
-HK_G_acc_LG = readtable("HK_G_acc_LG.xlsx");
-HK_R_acc_LG = readtable("HK_R_acc_LG.xlsx");
+% % LocalGini results
+% HK_G_acc_LG = readtable("HK_G_acc_LG.xlsx");
+% HK_R_acc_LG = readtable("HK_R_acc_LG.xlsx");
 
 % StanDep results
 HK_G_acc_SD = readtable("MatchComparisonResults_G.xlsx")
@@ -92,10 +92,10 @@ columnName = HK_G_acc_LT.Properties.VariableNames{1};
 results_table.("Var2") = HK_G_acc_LT.(columnName);
 results_table.Properties.VariableNames{2} = columnName;
 
-% HK genes for LocalGini thresholding
-columnName = HK_G_acc_LG.Properties.VariableNames{1};
-results_table.("Var3") = HK_G_acc_LG.(columnName);
-results_table.Properties.VariableNames{3} = columnName;
+% % HK genes for LocalGini thresholding
+% columnName = HK_G_acc_LG.Properties.VariableNames{1};
+% results_table.("Var3") = HK_G_acc_LG.(columnName);
+% results_table.Properties.VariableNames{3} = columnName;
 
 % HK genes for StanDep thresholding
 columnName = HK_G_acc_SD.Properties.VariableNames{1};
@@ -112,10 +112,10 @@ columnName = HK_R_acc_LT.Properties.VariableNames{1};
 results_table.("Var6") = HK_R_acc_LT.(columnName);
 results_table.Properties.VariableNames{6} = columnName;
 
-% HK Reactions for LocalGini Thresholding
-columnName = HK_R_acc_LG.Properties.VariableNames{1};
-results_table.("Var7") = HK_R_acc_LG.(columnName);
-results_table.Properties.VariableNames{7} = columnName;
+% % HK Reactions for LocalGini Thresholding
+% columnName = HK_R_acc_LG.Properties.VariableNames{1};
+% results_table.("Var7") = HK_R_acc_LG.(columnName);
+% results_table.Properties.VariableNames{7} = columnName;
 
 % HK Reactions for StanDep Thresholding
 columnName = HK_R_acc_SD.Properties.VariableNames{1};
