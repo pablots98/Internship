@@ -3,7 +3,7 @@ function [onlyOR, anyAND, singleGene] = analyzeGPRWithExpression(model, expressi
     anyAND = 0;
     singleGene = 0;
     
-    % Assume that expressionData is a table with 'EnsemblID' as one of the columns
+    % Assume that expressionData is a table with 'EnsemblID' as one of its columns
     ensemblIDs = expressionData.Ensembl_GeneID;
     
     % Assume that the model has a gene correspondence that also uses Ensembl IDs
@@ -21,7 +21,7 @@ function [onlyOR, anyAND, singleGene] = analyzeGPRWithExpression(model, expressi
         % Extract the genes mentioned in the rule
         genesInRule = extractGenesFromRule(rule);
         
-        % Check if any gene in the rule is in the list of common genes
+        % Check if any gene in the rule is on the list of common genes
         if ~isempty(intersect(genesInRule, commonGenes))
         
             simplifiedRule = lower(strtrim(rule));
