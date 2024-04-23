@@ -1,7 +1,10 @@
-function [onlyOR, anyAND, singleGene] = analyzeGPRWithExpression(model, expressionData)
+function [onlyOR, anyAND, singleGene, onlyORgenes, anyANDgenes, singleGenes] = analyzeGPRWithExpression(model, expressionData)
     onlyOR = 0;
     anyAND = 0;
     singleGene = 0;
+    onlyORgenes = {};  % Almacena los ENSEMBL_ID para only OR
+    anyANDgenes = {};  % Almacena los ENSEMBL_ID para any AND
+    singleGenes = {};  % Almacena los ENSEMBL_ID para singleGenes
     
     % Assume that expressionData is a table with 'EnsemblID' as one of its columns
     ensemblIDs = expressionData.Ensembl_GeneID;
@@ -22,7 +25,8 @@ function [onlyOR, anyAND, singleGene] = analyzeGPRWithExpression(model, expressi
         genesInRule = extractGenesFromRule(rule);
         
         % Check if any gene in the rule is on the list of common genes
-        if ~isempty(intersect(genesInRule, commonGenes))
+        commonGenesInRule = intersect(genesInRule, commonGenes);
+        if ~isempty(commonGenesInRule)
         
             simplifiedRule = lower(strtrim(rule));
             hasOR = contains(simplifiedRule, 'or');
@@ -30,14 +34,17 @@ function [onlyOR, anyAND, singleGene] = analyzeGPRWithExpression(model, expressi
             
             if hasOR && ~hasAND
                 onlyOR = onlyOR + 1;
+                onlyORgenes = [onlyORgenes; commonGenesInRule];  % Agrega los genes a la lista
             end
             
             if hasAND
                 anyAND = anyAND + 1;
+                anyANDgenes = [anyANDgenes; commonGenesInRule];  % Agrega los genes a la lista
             end
             
             if ~hasAND && ~hasOR
                 singleGene = singleGene + 1;
+                singleGenes = [singleGenes; commonGenesInRule];  % Agrega los genes a la lista
             end
         end
     end
