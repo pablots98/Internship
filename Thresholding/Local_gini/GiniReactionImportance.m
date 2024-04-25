@@ -68,12 +68,12 @@ parsedGPR = GPRparser(model);
 if ThS==1 % thresholding at gene level
     
     temp_var = model_exp_value;
-    temp_var = table2array(temp_var); % Convierte la tabla en un array
+    temp_var = table2array(temp_var); % From a table to an Array
     temp_var(temp_var==0)=[];    
     LT = prctile(temp_var,lt); % lower threshold value
     UT = prctile(temp_var,ut); % upper threshold value   
     clear temp_var
-    model_exp_value = table2array(model_exp_value); % Asegúrate de que es una matriz
+    model_exp_value = table2array(model_exp_value); % From table to array
 
     Loc_Gini = ginicoeff(model_exp_value); % gini coefficient based thresholding
     Loc_Gini(Loc_Gini>=UT)=UT;Loc_Gini(Loc_Gini<=LT)=LT;
@@ -88,7 +88,7 @@ if ThS==1 % thresholding at gene level
 elseif ThS==2 % thresholding at enzyme level
   
     %%%%%%%%%%%% remove this %%%%%%%%%%%%%%%
-    load('rxn_exp_enz_7525_cancer.mat')
+    %load('rxn_exp_enz_7525_cancer.mat')
     %%%%%%%%%%% unitl here %%%%%%%%%%%%%%
 elseif ThS==3 % thresholding at reaction level
     

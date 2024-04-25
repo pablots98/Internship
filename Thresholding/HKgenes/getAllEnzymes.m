@@ -22,21 +22,21 @@ function [enzymes] = getAllEnzymes(model)
     enzymes = struct('names', {}, 'rxns', {}, 'subSystems', {});
 
     % Iterate through each GPR to construct the enzyme list
-    uniqueGPRs = unique(grRules);
-    for i = 1:length(uniqueGPRs)
-        if isempty(uniqueGPRs{i})
+    %uniqueGPRs = unique(grRules);
+    for i = 1:length(grRules)
+        if isempty(grRules{i})
             continue;
         end
 
         % Find indices where current GPR occurs
-        idx = strcmp(grRules, uniqueGPRs{i});
+        idx = strcmp(grRules, grRules{i});
         
         % Collect reactions and subsystems for this GPR
         enzymeRxns = reactions(idx);
         enzymeSubSys = subsystems(idx);
 
         % Store in structure
-        enzymes(i).names = uniqueGPRs{i};
+        enzymes(i).names = grRules{i};
         enzymes(i).rxns = enzymeRxns;
         enzymes(i).subSystems = enzymeSubSys;
     end
