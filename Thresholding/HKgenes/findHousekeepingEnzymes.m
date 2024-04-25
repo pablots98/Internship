@@ -5,7 +5,7 @@ function [hkDetails] = findHousekeepingDetails(model, hkGenes, ruleType)
     % INPUT:
     %    model:      A COBRA model with gene-protein-reaction (GPR) associations
     %    hkGenes:    A cell array of housekeeping gene IDs
-    %    ruleType:   A string specifying the rule type ('AND', 'OR', 'INDIVIDUAL')
+    %    ruleType:   A string specifying the rule type ('AND', 'OR', 'INDIVIDUAL', 'ALL')
     %
     % OUTPUT:
     %    hkDetails:  A structure containing detailed housekeeping gene associations
@@ -39,8 +39,13 @@ function [hkDetails] = findHousekeepingDetails(model, hkGenes, ruleType)
                     % This pattern checks if the GPR contains only the gene ID and possibly whitespace
                     individualPattern = strcat('^[\s]*', strjoin(hkGenes, '$|[\s]*'), '$');
                     matchesRuleType = ~isempty(regexp(currentGPR, individualPattern, 'once'));
+                case 'ALL'
+                    % This checks for any mention of housekeeping genes in any rule type
+                    matchesRuleType = contains(currentGPR, ' or ', 'IgnoreCase', true) || ...
+                                      contains(currentGPR, ' and ', 'IgnoreCase', true) || ...
+                                      ~isempty(regexp(currentGPR, strcat('^[\s]*', strjoin(hkGenes, '$|[\s]*'), '$'), 'once'));
                 otherwise
-                    error('Invalid ruleType specified. Choose from ''AND'', ''OR'', ''INDIVIDUAL''.');
+                    error('Invalid ruleType specified. Choose from ''AND'', ''OR'', ''INDIVIDUAL'', ''ALL''.');
             end
 
             % Add details to hkDetails if the rule matches the specified type
@@ -57,3 +62,4 @@ function [hkDetails] = findHousekeepingDetails(model, hkGenes, ruleType)
         end
     end
 end
+
