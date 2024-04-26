@@ -1,0 +1,61 @@
+function [onlyOR, anyAND, singleGene, onlyORgenes, anyANDgenes, singleGenes] = analyzeGPRWithExpression(model, expressionData)
+    onlyOR = 0;
+    anyAND = 0;
+    singleGene = 0;
+    mixed = 0;
+    onlyORgenes = {};  
+    onlyANDgenes = {};  
+    singleGenes = {};
+    mixedGenes = 
+    
+    ensemblIDs = expressionData.Ensembl_GeneID;
+    
+    modelGenes = model.genes; % adjust this according to your specific model
+    
+    % Find common genes
+    commonGenes = intersect(ensemblIDs, modelGenes);
+    
+    for i = 1:length(model.rxns)
+        rule = model.grRules{i};
+        if isempty(rule)
+            continue;
+        end
+        
+        % Extract the genes mentioned in the rule
+        genesInRule = extractGenesFromRule(rule);
+        
+        % Check if any gene in the rule is on the list of common genes
+        commonGenesInRule = intersect(genesInRule, commonGenes);
+        if ~isempty(commonGenesInRule)
+        
+            simplifiedRule = lower(strtrim(rule));
+            hasOR = contains(simplifiedRule, 'or e');
+            hasAND = contains(simplifiedRule, 'and e');
+            OR_weird = constains(simplifiedRule, ') or (');
+            AND_weird = constains(simplifiedRule, ') and (');
+            
+            if hasOR && ~hasAND
+                onlyOR = onlyOR + 1;
+                onlyORgenes = [onlyORgenes; commonGenesInRule];  % Agrega los genes a la lista
+            end
+            
+            if hasAND && ~hasOR
+                anyAND = anyAND + 1;
+                anyANDgenes = [anyANDgenes; commonGenesInRule];  % Agrega los genes a la lista
+            end
+            
+            if ~hasAND && ~hasOR
+                singleGene = singleGene + 1;
+                singleGenes = [singleGenes; commonGenesInRule];  % Agrega los genes a la lista
+            end
+        end
+    end
+end
+
+% function genes = extractGenesFromRule(rule)
+%     % Remove logical operators and parentheses
+%     cleanedRule = regexprep(rule, 'and|or|not|\(|\)', '');
+%     % This function needs to be defined to correctly extract genes from a GPR rule
+%     % depending on the specific format of the rules in your model
+%     genes = regexp(cleanedRule, '[a-zA-Z0-9_]+', 'match');
+% end
