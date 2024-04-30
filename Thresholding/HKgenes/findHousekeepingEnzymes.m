@@ -1,4 +1,4 @@
-function [hkDetails] = findHousekeepingDetails(model, hkGenes, ruleType)
+function [hkDetails] = findHousekeepingEnzymes(model, hkGenes, ruleType)
     % USAGE:
     %    [hkDetails] = findHousekeepingDetails(model, hkGenes, ruleType)
     %
