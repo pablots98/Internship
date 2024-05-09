@@ -20,7 +20,7 @@ function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
         expressionData.value = GeneExp_P_norm;
 
         % Mapea la expresión genética a reacciones
-        IMR90_Y2_normCR = mapExpressionToReactions(model_p, expressionData, 'false');
+        IMR90_Y2_normCR = mapExpressionToReactions(model_p, expressionData, false);
         coreReactions = model_p.rxns(IMR90_Y2_normCR >= 1);
 
         % Análisis de GPR rules
