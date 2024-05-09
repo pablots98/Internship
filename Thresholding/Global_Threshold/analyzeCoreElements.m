@@ -4,29 +4,20 @@ function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
 
     % Longitudes de datos necesarias
     IMR90_Y2_length = length(GeneExp_P);
-    IMR90_Y2_RLength = length(model_p.rxns); % Supone una lista de todas las reacciones en el modelo
+    IMR90_Y2_RLength = length(model_p.rxns);
 
     % Itera desde el percentil 100 hasta el 60
     for p = 100:-1:60
-        % Calcula el umbral de expresión
         percentile_value = prctile(GenExp_all, p);
         GeneExp_P_norm = GeneExp_P ./ percentile_value;
-
-        % Determina los core genes
         coreGenes = met_ens(GeneExp_P_norm >= 1);
-
-        % Prepara los datos de expresión para el mapeo
         expressionData.gene = met_ens;
         expressionData.value = GeneExp_P_norm;
-
-        % Mapea la expresión genética a reacciones
         IMR90_Y2_normCR = mapExpressionToReactions(model_p, expressionData, false);
         coreReactions = model_p.rxns(IMR90_Y2_normCR >= 1);
-
-        % Análisis de GPR rules
         ruleAnalysis = analyzeGPR(coreReactions, model_p.grRules, model_p);
 
-        % Guarda los resultados para este percentil
+        % Guarda los resultados incluyendo los porcentajes
         results.(sprintf('P%d', p)) = struct(...
             'threshold', percentile_value, ...
             'numCoreGenes', length(coreGenes), ...
@@ -34,14 +25,20 @@ function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
             'numOrRules', ruleAnalysis.or, ...
             'numAndRules', ruleAnalysis.and, ...
             'numSingleRules', ruleAnalysis.single, ...
-            'numCombinedRules', ruleAnalysis.combined);
-
+            'numCombinedRules', ruleAnalysis.combined, ...
+            'percentOrRules', ruleAnalysis.orPct, ...
+            'percentAndRules', ruleAnalysis.andPct, ...
+            'percentSingleRules', ruleAnalysis.singlePct, ...
+            'percentCombinedRules', ruleAnalysis.combinedPct);
     end
 end
 
+
 function ruleAnalysis = analyzeGPR(coreReactions, grRules, model_p)
     ruleAnalysis = struct('or', 0, 'and', 0, 'single', 0, 'combined', 0);
-    for i = 1:length(coreReactions)
+    totalRules = length(coreReactions);  % Almacena el total de reacciones centrales
+
+    for i = 1:totalRules
         reaction = coreReactions(i);
         rule = grRules{strcmp(model_p.rxns, reaction)};
         if contains(rule, 'and') && contains(rule, 'or')
@@ -54,6 +51,20 @@ function ruleAnalysis = analyzeGPR(coreReactions, grRules, model_p)
             ruleAnalysis.single = ruleAnalysis.single + 1;
         end
     end
+
+    % Calcula los porcentajes para cada tipo de regla
+    if totalRules > 0
+        ruleAnalysis.orPct = 100 * ruleAnalysis.or / totalRules;
+        ruleAnalysis.andPct = 100 * ruleAnalysis.and / totalRules;
+        ruleAnalysis.singlePct = 100 * ruleAnalysis.single / totalRules;
+        ruleAnalysis.combinedPct = 100 * ruleAnalysis.combined / totalRules;
+    else
+        ruleAnalysis.orPct = 0;
+        ruleAnalysis.andPct = 0;
+        ruleAnalysis.singlePct = 0;
+        ruleAnalysis.combinedPct = 0;
+    end
 end
+
 
 
