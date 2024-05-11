@@ -1,12 +1,12 @@
 function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
-    % Inicializa las estructuras de almacenamiento
+    % Initialize storage structures
     results = struct();
 
-    % Longitudes de datos necesarias
+    % Necessary data lengths
     IMR90_Y2_length = length(GeneExp_P);
     IMR90_Y2_RLength = length(model_p.rxns);
 
-    % Itera desde el percentil 100 hasta el 60
+    % Iterate from the 100th percentile down to the 60th
     for p = 100:-1:60
         percentile_value = prctile(GenExp_all, p);
         GeneExp_P_norm = GeneExp_P ./ percentile_value;
@@ -17,7 +17,7 @@ function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
         coreReactions = model_p.rxns(IMR90_Y2_normCR >= 1);
         ruleAnalysis = analyzeGPR(coreReactions, model_p.grRules, model_p);
 
-        % Guarda los resultados incluyendo los porcentajes
+        % Save results including percentages
         results.(sprintf('P%d', p)) = struct(...
             'threshold', percentile_value, ...
             'numCoreGenes', length(coreGenes), ...
@@ -36,7 +36,7 @@ end
 
 function ruleAnalysis = analyzeGPR(coreReactions, grRules, model_p)
     ruleAnalysis = struct('or', 0, 'and', 0, 'single', 0, 'combined', 0);
-    totalRules = length(coreReactions);  % Almacena el total de reacciones centrales
+    totalRules = length(coreReactions);  % Store the total number of core reactions
 
     for i = 1:totalRules
         reaction = coreReactions(i);
@@ -52,7 +52,7 @@ function ruleAnalysis = analyzeGPR(coreReactions, grRules, model_p)
         end
     end
 
-    % Calcula los porcentajes para cada tipo de regla
+    % Calculate percentages for each type of rule
     if totalRules > 0
         ruleAnalysis.orPct = 100 * ruleAnalysis.or / totalRules;
         ruleAnalysis.andPct = 100 * ruleAnalysis.and / totalRules;
