@@ -1,4 +1,4 @@
-function [coreRxns_binary = updateCoreRxnsBinary(expressionRxns_Sample, sampleNames, model_p)
+function [coreRxns_binary, reactionFractions] = ubiquityScore_Thresholding(expressionRxns_Sample, sampleNames, model_p)
     % Create the initial matrix with appropriate dimensions and zeros
     row_names = model_p.rxns;
     coreRxns_binary = zeros(length(row_names), length(sampleNames));
