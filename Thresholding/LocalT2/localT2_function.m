@@ -1,4 +1,4 @@
-function [adjusted_matrix, expression_scoreMatrix] = localT2_new(mappedDat, unpruneddata, lowerThres, upperThres)
+function [adjusted_matrix, expression_scoreMatrix] = localT2_function(mappedDat, unpruneddata, lowerThres, upperThres)
 % This function adjusts gene expression data based on provided lower and 
 % upper percentile thresholds. It converts the input data into a binary 
 % format where values equal to or greater than 1 are set to 1, and values 
