@@ -38,7 +38,8 @@ function [adjusted_matrix, expression_scoreMatrix] = localT2_function(mappedDat,
     mappedDat = table2array(mappedDat);
     unpruneddata = table2array(unpruneddata);
 
-    linData = reshape(unpruneddata, [], 1);
+
+    linData = reshape(unpruneddata(:, 1:end-1), [], 1);
     lowerThres = quantile(linData, lowerThres / 100);
     upperThres = quantile(linData, upperThres / 100);
 
