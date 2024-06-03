@@ -30,15 +30,15 @@ function [adjusted_matrix, expression_scoreMatrix] = localGini_function(mappedDa
         giniCoefficient = gini(expressionValue);
 
         % Calcular el umbral Localgini
-        localGiniThreshold = prctile(expressionValue, giniCoefficient * 100);
+        %localGiniThreshold = prctile(expressionValue, (giniCoefficient));
 
         % Asignar el umbral adecuado basado en lowerThres y upperThres
-        if localGiniThreshold >= upperThres
+        if giniCoefficient >= upperThres
             expression_ths_local_Gini_25_75(i) = upperThres;
-        elseif localGiniThreshold <= lowerThres
+        elseif giniCoefficient <= lowerThres
             expression_ths_local_Gini_25_75(i) = lowerThres;
         else
-            expression_ths_local_Gini_25_75(i) = localGiniThreshold;
+            expression_ths_local_Gini_25_75(i) = giniCoefficient;
         end
     end
 
@@ -51,10 +51,10 @@ function [adjusted_matrix, expression_scoreMatrix] = localGini_function(mappedDa
     adjusted_matrix = expression_scoreLocal_Gini_25_75 >= 1;
 end
 
-% Definir la función gini según la fórmula del paper
-function G = gini(x)
-    % Calcular el coeficiente de Gini de un vector x
-    n = numel(x);
-    mean_x = mean(x);
-    G = sum(sum(abs(x(:) - x(:)'))) / (2 * n^2 * mean_x);
-end
+% % Definir la función gini según la fórmula del paper
+% function G = gini(x)
+%     % Calcular el coeficiente de Gini de un vector x
+%     n = numel(x);
+%     mean_x = mean(x);
+%     G = sum(sum(abs(x(:) - x(:)'))) / (2 * n^2 * mean_x);
+% end
