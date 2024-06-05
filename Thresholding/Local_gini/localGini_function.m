@@ -26,6 +26,12 @@ function [adjusted_matrix, expression_scoreMatrix] = localGini_function(mappedDa
     coreMat = false(size(mappedDat));
     expression_ths_local_Gini_25_75 = zeros(size(mappedDat, 1), 1);
 
+
+    % giniCoefficient = ginicoeff(mappedDat);
+    % giniCoefficient(giniCoefficient>=upperThres)=upperThres; giniCoefficient(giniCoefficient<=lowerThres)=lowerThres;
+
+
+
     for i = 1:size(mappedDat, 1)
         expressionValue = mappedDat(i, :);
 
@@ -35,28 +41,28 @@ function [adjusted_matrix, expression_scoreMatrix] = localGini_function(mappedDa
         % Calcular el umbral Localgini
         %localGiniThreshold = prctile(expressionValue, (giniCoefficient));
 
-        % % Asignar el umbral adecuado basado en lowerThres y upperThres
-        % if giniCoefficient >= upperThres
-        %     expression_ths_local_Gini_25_75(i) = upperThres;
-        % elseif giniCoefficient <= lowerThres
-        %     expression_ths_local_Gini_25_75(i) = lowerThres;
-        % else
-        %     expression_ths_local_Gini_25_75(i) = giniCoefficient;
+        % Asignar el umbral adecuado basado en lowerThres y upperThres
+        if giniCoefficient >= upperThres
+            expression_ths_local_Gini_25_75(i) = upperThres;
+        elseif giniCoefficient <= lowerThres
+            expression_ths_local_Gini_25_75(i) = lowerThres;
+        else
+            expression_ths_local_Gini_25_75(i) = giniCoefficient;
         end
-        giniCoefficient(giniCoefficient>=upperThres)=upperThres;giniCoefficient(giniCoefficient<=lowerThres)=lowerThres;
-
     end
     
-    gene_exp = expressionValue-repmat(giniCoefficient,1,numel(Contexts));
-    gene_exp = gene_exp./std(gene_exp,[],2); % modified gene expression values 
+    % gene_exp = mappedDat-repmat(giniCoefficient,1,numel(Contexts));
+    % gene_exp = gene_exp./std(gene_exp,[],2); % modified gene expression values 
+    % 
+    expression_scoreLocal_Gini_25_75 = zeros(size(mappedDat));
+    for i = 1:size(mappedDat, 2)
+       expression_scoreLocal_Gini_25_75(:, i) = mappedDat(:, i) ./ expression_ths_local_Gini_25_75;
+    end
 
-    % expression_scoreLocal_Gini_25_75 = zeros(size(mappedDat));
-    % for i = 1:size(mappedDat, 2)
-    %    expression_scoreLocal_Gini_25_75(:, i) = mappedDat(:, i) ./ expression_ths_local_Gini_25_75;
-    % end
-
-    expression_scoreMatrix = gene_exp; % expression_scoreLocal_Gini_25_75
-    adjusted_matrix = gene_exp >= 1; % expression_scoreLocal_Gini_25_75 >= 1
+    expression_scoreMatrix = expression_scoreLocal_Gini_25_75; % gene_exp; % expression_scoreLocal_Gini_25_75
+    % expression_scoreMatrix = gene_exp; 
+    adjusted_matrix = expression_scoreLocal_Gini_25_75 >= 1; % gene_exp >= 1; % expression_scoreLocal_Gini_25_75 >= 1
+    % adjusted_matrix = gene_exp >= 1; 
 end
 
 function [gcp]=ginicoeff(data)
