@@ -16,47 +16,47 @@ function [adjusted_matrix, expression_scoreMatrix] = localGini_function(mappedDa
     Contexts = mappedDat.Properties.VariableNames;
     mappedDat = table2array(mappedDat);
     unpruneddata = table2array(unpruneddata);
-    unpruneddata(unpruneddata==0) = [];
+    % unpruneddata(unpruneddata==0) = [];
     
 
     linData = reshape(unpruneddata(:, 1:end-1), [], 1);
-    lowerThres = prctile(linData, lowerThres);
-    upperThres = prctile(linData, upperThres);
+    lowerThres = quantile(linData, lowerThres / 100);
+    upperThres = quantile(linData, upperThres / 100);
 
     coreMat = false(size(mappedDat));
     expression_ths_local_Gini_25_75 = zeros(size(mappedDat, 1), 1);
 
 
     giniCoefficient = ginicoeff(mappedDat);
-    giniCoefficient(giniCoefficient>=upperThres)=upperThres; giniCoefficient(giniCoefficient<=lowerThres)=lowerThres;
+    % giniCoefficient(giniCoefficient>=upperThres)=upperThres; giniCoefficient(giniCoefficient<=lowerThres)=lowerThres;
 
 
 
-    % for i = 1:size(mappedDat, 1)
-    %     expressionValue = mappedDat(i, :);
-    % 
-    %     % Calcular el coeficiente de Gini usando la fórmula del paper
-    %     giniCoefficient = ginicoeff(expressionValue);
-    % 
-    %     % Calcular el umbral Localgini
-    %     % localGiniThreshold = prctile(expressionValue, (giniCoefficient));
-    % 
-    %     % Asignar el umbral adecuado basado en lowerThres y upperThres
-    %     if giniCoefficient >= upperThres
-    %         expression_ths_local_Gini_25_75(i) = upperThres;
-    %     elseif giniCoefficient <= lowerThres
-    %         expression_ths_local_Gini_25_75(i) = lowerThres;
-    %     else
-    %         expression_ths_local_Gini_25_75(i) = giniCoefficient;
-    %     end
-    % end
+    for i = 1:size(mappedDat, 1)
+        expressionValue = mappedDat(i, :);
+
+        % Calcular el coeficiente de Gini usando la fórmula del paper
+        giniCoefficient = ginicoeff(expressionValue);
+
+        % Calcular el umbral Localgini
+        %localGiniThreshold = prctile(expressionValue, (giniCoefficient));
+
+        % Asignar el umbral adecuado basado en lowerThres y upperThres
+        if giniCoefficient >= upperThres
+            expression_ths_local_Gini_25_75(i) = upperThres;
+        elseif giniCoefficient <= lowerThres
+            expression_ths_local_Gini_25_75(i) = lowerThres;
+        else
+            expression_ths_local_Gini_25_75(i) = giniCoefficient;
+        end
+    end
     
     % gene_exp = mappedDat-repmat(giniCoefficient,1,numel(Contexts));
     % gene_exp = gene_exp./std(gene_exp,[],2); % modified gene expression values 
 
     expression_scoreLocal_Gini_25_75 = zeros(size(mappedDat));
     for i = 1:size(mappedDat, 2)
-       expression_scoreLocal_Gini_25_75(:, i) = mappedDat(:, i) ./ giniCoefficient;
+       expression_scoreLocal_Gini_25_75(:, i) = mappedDat(:, i) ./ expression_ths_local_Gini_25_75;
     end
 
     expression_scoreMatrix = expression_scoreLocal_Gini_25_75; % gene_exp; % expression_scoreLocal_Gini_25_75
