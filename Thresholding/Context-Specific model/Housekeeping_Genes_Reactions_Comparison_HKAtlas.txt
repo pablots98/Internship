@@ -1,0 +1,288 @@
+FASTCORE_75_IMR90_Y1 - Inclusion HK genes: 0.93
+
+FASTCORE_75_IMR90_Y1 - Inclusion normalized HK genes: 13.12
+
+FASTCORE_75_IMR90_Y1 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_Y1 - Inclusion normalized HK reactions OR: 21.73
+
+FASTCORE_75_IMR90_Y1 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_Y1 - Inclusion normalized HK reactions AND: 17.07
+
+FASTCORE_75_IMR90_Y2 - Inclusion HK genes: 0.93
+
+FASTCORE_75_IMR90_Y2 - Inclusion normalized HK genes: 13.18
+
+FASTCORE_75_IMR90_Y2 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_Y2 - Inclusion normalized HK reactions OR: 21.64
+
+FASTCORE_75_IMR90_Y2 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_Y2 - Inclusion normalized HK reactions AND: 16.99
+
+FASTCORE_75_IMR90_Y3 - Inclusion HK genes: 0.93
+
+FASTCORE_75_IMR90_Y3 - Inclusion normalized HK genes: 13.23
+
+FASTCORE_75_IMR90_Y3 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_Y3 - Inclusion normalized HK reactions OR: 21.72
+
+FASTCORE_75_IMR90_Y3 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_Y3 - Inclusion normalized HK reactions AND: 17.06
+
+FASTCORE_75_IMR90_O1 - Inclusion HK genes: 0.94
+
+FASTCORE_75_IMR90_O1 - Inclusion normalized HK genes: 13.30
+
+FASTCORE_75_IMR90_O1 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_O1 - Inclusion normalized HK reactions OR: 22.00
+
+FASTCORE_75_IMR90_O1 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_O1 - Inclusion normalized HK reactions AND: 17.35
+
+FASTCORE_75_IMR90_O2 - Inclusion HK genes: 0.94
+
+FASTCORE_75_IMR90_O2 - Inclusion normalized HK genes: 12.93
+
+FASTCORE_75_IMR90_O2 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_O2 - Inclusion normalized HK reactions OR: 20.63
+
+FASTCORE_75_IMR90_O2 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_O2 - Inclusion normalized HK reactions AND: 16.24
+
+FASTCORE_75_IMR90_O3 - Inclusion HK genes: 0.93
+
+FASTCORE_75_IMR90_O3 - Inclusion normalized HK genes: 13.03
+
+FASTCORE_75_IMR90_O3 - Inclusion HK reactions OR: 0.88
+
+FASTCORE_75_IMR90_O3 - Inclusion normalized HK reactions OR: 21.18
+
+FASTCORE_75_IMR90_O3 - Inclusion HK reactions AND: 0.92
+
+FASTCORE_75_IMR90_O3 - Inclusion normalized HK reactions AND: 16.65
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion normalized HK genes: 12.09
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion HK reactions OR: 0.96
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion normalized HK reactions OR: 16.08
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y1_LT2 - Inclusion normalized HK reactions AND: 12.45
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion normalized HK genes: 11.99
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion HK reactions OR: 0.96
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion normalized HK reactions OR: 15.80
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y2_LT2 - Inclusion normalized HK reactions AND: 12.24
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion normalized HK genes: 11.96
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion HK reactions OR: 0.96
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion normalized HK reactions OR: 16.04
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y3_LT2 - Inclusion normalized HK reactions AND: 12.39
+
+FASTCORE_IMR90_O1_LT2 - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_O1_LT2 - Inclusion normalized HK genes: 11.99
+
+FASTCORE_IMR90_O1_LT2 - Inclusion HK reactions OR: 0.96
+
+FASTCORE_IMR90_O1_LT2 - Inclusion normalized HK reactions OR: 16.07
+
+FASTCORE_IMR90_O1_LT2 - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_O1_LT2 - Inclusion normalized HK reactions AND: 12.43
+
+FASTCORE_IMR90_O2_LT2 - Inclusion HK genes: 0.96
+
+FASTCORE_IMR90_O2_LT2 - Inclusion normalized HK genes: 11.92
+
+FASTCORE_IMR90_O2_LT2 - Inclusion HK reactions OR: 0.90
+
+FASTCORE_IMR90_O2_LT2 - Inclusion normalized HK reactions OR: 15.26
+
+FASTCORE_IMR90_O2_LT2 - Inclusion HK reactions AND: 0.94
+
+FASTCORE_IMR90_O2_LT2 - Inclusion normalized HK reactions AND: 11.93
+
+FASTCORE_IMR90_O3_LT2 - Inclusion HK genes: 0.90
+
+FASTCORE_IMR90_O3_LT2 - Inclusion normalized HK genes: 11.26
+
+FASTCORE_IMR90_O3_LT2 - Inclusion HK reactions OR: 0.96
+
+FASTCORE_IMR90_O3_LT2 - Inclusion normalized HK reactions OR: 15.66
+
+FASTCORE_IMR90_O3_LT2 - Inclusion HK reactions AND: 0.97
+
+FASTCORE_IMR90_O3_LT2 - Inclusion normalized HK reactions AND: 12.00
+
+FASTCORE_IMR90_Y1_LG - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y1_LG - Inclusion normalized HK genes: 11.84
+
+FASTCORE_IMR90_Y1_LG - Inclusion HK reactions OR: 0.99
+
+FASTCORE_IMR90_Y1_LG - Inclusion normalized HK reactions OR: 17.08
+
+FASTCORE_IMR90_Y1_LG - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_Y1_LG - Inclusion normalized HK reactions AND: 12.95
+
+FASTCORE_IMR90_Y2_LG - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y2_LG - Inclusion normalized HK genes: 11.84
+
+FASTCORE_IMR90_Y2_LG - Inclusion HK reactions OR: 0.99
+
+FASTCORE_IMR90_Y2_LG - Inclusion normalized HK reactions OR: 17.12
+
+FASTCORE_IMR90_Y2_LG - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_Y2_LG - Inclusion normalized HK reactions AND: 12.99
+
+FASTCORE_IMR90_Y3_LG - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y3_LG - Inclusion normalized HK genes: 11.81
+
+FASTCORE_IMR90_Y3_LG - Inclusion HK reactions OR: 0.98
+
+FASTCORE_IMR90_Y3_LG - Inclusion normalized HK reactions OR: 16.98
+
+FASTCORE_IMR90_Y3_LG - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_Y3_LG - Inclusion normalized HK reactions AND: 12.99
+
+FASTCORE_IMR90_O1_LG - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_O1_LG - Inclusion normalized HK genes: 11.80
+
+FASTCORE_IMR90_O1_LG - Inclusion HK reactions OR: 0.98
+
+FASTCORE_IMR90_O1_LG - Inclusion normalized HK reactions OR: 16.96
+
+FASTCORE_IMR90_O1_LG - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_O1_LG - Inclusion normalized HK reactions AND: 12.96
+
+FASTCORE_IMR90_O2_LG - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_O2_LG - Inclusion normalized HK genes: 11.92
+
+FASTCORE_IMR90_O2_LG - Inclusion HK reactions OR: 0.95
+
+FASTCORE_IMR90_O2_LG - Inclusion normalized HK reactions OR: 16.65
+
+FASTCORE_IMR90_O2_LG - Inclusion HK reactions AND: 0.98
+
+FASTCORE_IMR90_O2_LG - Inclusion normalized HK reactions AND: 12.92
+
+FASTCORE_IMR90_O3_LG - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_O3_LG - Inclusion normalized HK genes: 11.88
+
+FASTCORE_IMR90_O3_LG - Inclusion HK reactions OR: 0.99
+
+FASTCORE_IMR90_O3_LG - Inclusion normalized HK reactions OR: 17.23
+
+FASTCORE_IMR90_O3_LG - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_O3_LG - Inclusion normalized HK reactions AND: 13.06
+
+FASTCORE_IMR90_Y1_SD - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y1_SD - Inclusion normalized HK genes: 12.08
+
+FASTCORE_IMR90_Y1_SD - Inclusion HK reactions OR: 0.97
+
+FASTCORE_IMR90_Y1_SD - Inclusion normalized HK reactions OR: 17.55
+
+FASTCORE_IMR90_Y1_SD - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y1_SD - Inclusion normalized HK reactions AND: 13.52
+
+FASTCORE_IMR90_Y2_SD - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y2_SD - Inclusion normalized HK genes: 12.03
+
+FASTCORE_IMR90_Y2_SD - Inclusion HK reactions OR: 0.97
+
+FASTCORE_IMR90_Y2_SD - Inclusion normalized HK reactions OR: 18.05
+
+FASTCORE_IMR90_Y2_SD - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y2_SD - Inclusion normalized HK reactions AND: 13.92
+
+FASTCORE_IMR90_Y3_SD - Inclusion HK genes: 0.98
+
+FASTCORE_IMR90_Y3_SD - Inclusion normalized HK genes: 12.03
+
+FASTCORE_IMR90_Y3_SD - Inclusion HK reactions OR: 0.97
+
+FASTCORE_IMR90_Y3_SD - Inclusion normalized HK reactions OR: 18.28
+
+FASTCORE_IMR90_Y3_SD - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_Y3_SD - Inclusion normalized HK reactions AND: 14.09
+
+FASTCORE_IMR90_O1_SD - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_O1_SD - Inclusion normalized HK genes: 11.99
+
+FASTCORE_IMR90_O1_SD - Inclusion HK reactions OR: 0.97
+
+FASTCORE_IMR90_O1_SD - Inclusion normalized HK reactions OR: 18.03
+
+FASTCORE_IMR90_O1_SD - Inclusion HK reactions AND: 0.99
+
+FASTCORE_IMR90_O1_SD - Inclusion normalized HK reactions AND: 13.88
+
+FASTCORE_IMR90_O2_SD - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_O2_SD - Inclusion normalized HK genes: 12.08
+
+FASTCORE_IMR90_O2_SD - Inclusion HK reactions OR: 0.92
+
+FASTCORE_IMR90_O2_SD - Inclusion normalized HK reactions OR: 17.21
+
+FASTCORE_IMR90_O2_SD - Inclusion HK reactions AND: 0.96
+
+FASTCORE_IMR90_O2_SD - Inclusion normalized HK reactions AND: 13.39
+
+FASTCORE_IMR90_O3_SD - Inclusion HK genes: 0.97
+
+FASTCORE_IMR90_O3_SD - Inclusion normalized HK genes: 12.05
+
+FASTCORE_IMR90_O3_SD - Inclusion HK reactions OR: 0.97
+
+FASTCORE_IMR90_O3_SD - Inclusion normalized HK reactions OR: 18.06
+
+FASTCORE_IMR90_O3_SD - Inclusion HK reactions AND: 1.00
+
+FASTCORE_IMR90_O3_SD - Inclusion normalized HK reactions AND: 13.89
+
