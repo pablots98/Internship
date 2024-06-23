@@ -7,7 +7,7 @@ function results = analyzeCoreElements(GenExp_all, GeneExp_P, met_ens, model_p)
     IMR90_Y2_RLength = length(model_p.rxns);
 
     % Iterate from the 100th percentile down to the 60th
-    for p = 100:-1:60
+    for p = 100:-1:1
         percentile_value = prctile(GenExp_all, p);
         GeneExp_P_norm = GeneExp_P ./ percentile_value;
         coreGenes = met_ens(GeneExp_P_norm >= 1);
