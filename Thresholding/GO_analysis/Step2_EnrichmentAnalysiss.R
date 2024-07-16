@@ -20,6 +20,8 @@ library(enrichplot)
 # GENE ONTOLOGY ENRICHMENT ANALYSIS
 # #############################################
 
+
+
 # Load the data
 Eis_met = read.table('unique_eis_met.txt', header = FALSE, sep = "\t")
 HK_met = read.table('unique_hk_met.txt', header = FALSE, sep = "\t")
@@ -28,23 +30,23 @@ Joshi_met = read.table('unique_joshi_met.txt', header = FALSE, sep = "\t")
 # We will first explore what kind of biological processes are affected by 
 # performing a Gene Ontology enrichment analysis. 
 
-out.folder = "C:/Users/PC/OneDrive/Documentos/Systems_Biology_master/Internship/Internship/Thresholding/GO_analysis"
+out.folder = "C:/Users/pablo/OneDrive/Documentos/Systems_Biology_master/Github_folder/Internship/Thresholding/GO_analysis"
 
 # We will start by looking at processes that are up-regulated
-res.go.eis <- clusterProfiler::enrichGO(Eis_met$V1, OrgDb = "org.Hs.eg.db", 
+res.go.hk <- clusterProfiler::enrichGO(HK_met$V1, OrgDb = "org.Hs.eg.db", 
                    keyType="ENSEMBL", ont = "BP", 
                    pAdjustMethod = "BH", qvalueCutoff = 0.05, 
                    minGSSize = 20, maxGSSize = 400)
-res.go.eis.df <- as.data.frame(res.go.eis)
-write.table(res.go.eis.df, file=paste0(out.folder,"go-eis.txt"), sep="\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+res.go.hk.df <- as.data.frame(res.go.hk)
+write.table(res.go.hk.df, file=paste0(out.folder,"go-hk.txt"), sep="\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
 
-res.go.eis.sim <- enrichplot::pairwise_termsim(res.go.eis)
+res.go.hk.sim <- enrichplot::pairwise_termsim(res.go.hk)
 
 # then we visualize them in a treeplot
-treeplot(res.go.eis.sim, label_format = 0.5, showCategory = 100, cluster.params = list(n = 10))
+treeplot(res.go.hk.sim, label_format = 0.5, showCategory = 100, cluster.params = list(n = 10))
 
 # we will also save files that has a nicely readable figure
-filename <- paste0(out.folder,"GO-treeplot-eis.png")
+filename <- paste0(out.folder,"GO-treeplot-hk.png")
 png(filename , width = 3000, height = 4000, res = 150)
-plot(treeplot(res.go.eis.sim, label_format = 0.5, showCategory = 100, cluster.params = list(n = 10)))
+plot(treeplot(res.go.hk.sim, label_format = 0.5, showCategory = 100, cluster.params = list(n = 10)))
 dev.off()
